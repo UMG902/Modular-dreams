@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:bone"
+  },
+  "pattern": [
+    "XX"
+  ],
+  "result": {
+    "id": "modular_dreams:bone_hoe_head"
+  }
+}

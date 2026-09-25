@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:slime_ball"
+  },
+  "pattern": [
+    "X"
+  ],
+  "result": {
+    "id": "modular_dreams:slime_lining"
+  }
+}

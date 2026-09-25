@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:cherry_planks"
+  },
+  "pattern": [
+    "XX",
+    "X "
+  ],
+  "result": {
+    "id": "modular_dreams:cherry_axe_head"
+  }
+}

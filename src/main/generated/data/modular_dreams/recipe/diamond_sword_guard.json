@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:diamond"
+  },
+  "pattern": [
+    "X X"
+  ],
+  "result": {
+    "id": "modular_dreams:diamond_sword_guard"
+  }
+}

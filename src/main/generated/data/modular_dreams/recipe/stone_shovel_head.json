@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:cobblestone"
+  },
+  "pattern": [
+    "X"
+  ],
+  "result": {
+    "id": "modular_dreams:stone_shovel_head"
+  }
+}

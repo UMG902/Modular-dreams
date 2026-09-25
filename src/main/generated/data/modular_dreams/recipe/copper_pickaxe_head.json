@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:copper_ingot"
+  },
+  "pattern": [
+    "XXX"
+  ],
+  "result": {
+    "id": "modular_dreams:copper_pickaxe_head"
+  }
+}

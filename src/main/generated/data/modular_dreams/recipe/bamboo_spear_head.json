@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:bamboo_planks"
+  },
+  "pattern": [
+    "XX",
+    " X"
+  ],
+  "result": {
+    "id": "modular_dreams:bamboo_spear_head"
+  }
+}

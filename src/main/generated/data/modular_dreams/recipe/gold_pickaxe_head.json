@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:gold_ingot"
+  },
+  "pattern": [
+    "XXX"
+  ],
+  "result": {
+    "id": "modular_dreams:gold_pickaxe_head"
+  }
+}

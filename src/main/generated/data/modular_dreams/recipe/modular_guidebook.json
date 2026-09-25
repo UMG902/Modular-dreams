@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": "minecraft:book",
+    "I": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    "B",
+    "I"
+  ],
+  "result": {
+    "id": "modular_dreams:modular_guidebook"
+  }
+}

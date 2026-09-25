@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "has_guidebook": {
+      "conditions": {
+        "items": [
+          {
+            "items": "modular_dreams:modular_guidebook"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png",
+    "description": {
+      "translate": "advancements.modular_dreams.root.description"
+    },
+    "icon": {
+      "id": "minecraft:writable_book"
+    },
+    "title": {
+      "translate": "advancements.modular_dreams.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_guidebook"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

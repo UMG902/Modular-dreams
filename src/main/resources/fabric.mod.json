@@ -1,0 +1,35 @@
+{
+        "schemaVersion": 1,
+        "id": "modular_dreams",
+        "version": "${version}",
+        "name": "Modular Dreams",
+        "description": "A Tinkers'-inspired modular equipment system for vanilla tools, weapons and armor. Assemble, upgrade, repair and modify gear from vanilla materials.",
+        "authors": [
+                "Modular Dreams Team"
+        ],
+        "contact": {
+                "homepage": "https://fabricmc.net/",
+                "sources": "https://github.com/FabricMC/fabric-example-mod"
+        },
+        "license": "CC0-1.0",
+        "icon": "assets/modular_dreams/icon.png",
+        "environment": "*",
+        "accessWidener": "modular_dreams.classtweaker",
+        "entrypoints": {
+                "main": [
+                        "com.modulardreams.ModularDreams"
+                ],
+                "client": [
+                        "com.modulardreams.client.ModularDreamsClient"
+                ],
+                "fabric-datagen": [
+                        "com.modulardreams.datagen.ModDataGenerator"
+                ]
+        },
+        "depends": {
+                "fabricloader": ">=0.19.5",
+                "minecraft": "~26.3",
+                "java": ">=25",
+                "fabric-api": "*"
+        }
+}

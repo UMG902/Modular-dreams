@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:birch_planks"
+  },
+  "pattern": [
+    "XXX"
+  ],
+  "result": {
+    "id": "modular_dreams:birch_pickaxe_head"
+  }
+}

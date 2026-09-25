@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:gold_ingot"
+  },
+  "pattern": [
+    "X",
+    "X"
+  ],
+  "result": {
+    "id": "modular_dreams:gold_binding"
+  }
+}

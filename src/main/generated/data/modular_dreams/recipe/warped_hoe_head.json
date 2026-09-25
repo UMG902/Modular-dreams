@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:warped_planks"
+  },
+  "pattern": [
+    "XX"
+  ],
+  "result": {
+    "id": "modular_dreams:warped_hoe_head"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "S": "minecraft:stick",
+    "X": "minecraft:cobblestone"
+  },
+  "pattern": [
+    "X",
+    "S"
+  ],
+  "result": {
+    "id": "modular_dreams:stone_handle"
+  }
+}

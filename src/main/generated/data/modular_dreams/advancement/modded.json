@@ -1,0 +1,33 @@
+{
+  "parent": "modular_dreams:root",
+  "criteria": {
+    "has_modifier_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "modular_dreams:modular_pickaxe"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.modular_dreams.modded.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:redstone"
+    },
+    "title": {
+      "translate": "advancements.modular_dreams.modded.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_modifier_item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

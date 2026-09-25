@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    "XX"
+  ],
+  "result": {
+    "id": "modular_dreams:iron_hoe_head"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:diamond"
+  },
+  "pattern": [
+    "XX",
+    "X "
+  ],
+  "result": {
+    "id": "modular_dreams:diamond_axe_head"
+  }
+}

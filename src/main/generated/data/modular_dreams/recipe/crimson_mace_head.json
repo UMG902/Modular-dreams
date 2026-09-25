@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:crimson_planks"
+  },
+  "pattern": [
+    "XXX",
+    " X "
+  ],
+  "result": {
+    "id": "modular_dreams:crimson_mace_head"
+  }
+}

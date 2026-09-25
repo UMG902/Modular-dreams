@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:crimson_planks"
+  },
+  "pattern": [
+    "X X"
+  ],
+  "result": {
+    "id": "modular_dreams:crimson_sword_guard"
+  }
+}

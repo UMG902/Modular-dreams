@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:bone"
+  },
+  "pattern": [
+    "XXX",
+    " X "
+  ],
+  "result": {
+    "id": "modular_dreams:bone_mace_head"
+  }
+}

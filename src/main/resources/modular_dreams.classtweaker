@@ -1,0 +1,7 @@
+classTweaker v1 official
+
+# Access widening for Modular Dreams datagen:
+# exposes the output consumers of ItemModelGenerators so we can register
+# custom layered item models and client item definitions.
+accessible field net/minecraft/client/data/models/ItemModelGenerators itemModelOutput Lnet/minecraft/client/data/models/ItemModelOutput;
+accessible field net/minecraft/client/data/models/ItemModelGenerators modelOutput Ljava/util/function/BiConsumer;

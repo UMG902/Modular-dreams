@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "modular_dreams:item/modular_axe_base",
+    "layer1": "modular_dreams:item/modular_axe_overlay_blackstone"
+  }
+}

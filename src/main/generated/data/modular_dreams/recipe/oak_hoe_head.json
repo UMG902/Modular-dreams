@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:oak_planks"
+  },
+  "pattern": [
+    "XX"
+  ],
+  "result": {
+    "id": "modular_dreams:oak_hoe_head"
+  }
+}
