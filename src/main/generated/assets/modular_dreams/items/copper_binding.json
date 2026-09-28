@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "modular_dreams:copper_binding"
+    "model": "modular_dreams:binding",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -1606570
+      }
+    ]
   }
 }

@@ -11,263 +11,261 @@ import com.modulardreams.equipment.ModItems;
 import com.modulardreams.equipment.ModPartItems;
 import com.modulardreams.material.ModMaterials;
 import com.modulardreams.material.ModularMaterial;
-import com.modulardreams.modifier.Modifier;
 import com.modulardreams.part.PartType;
 import com.modulardreams.stats.ModTraits;
 
 /**
- * English language file: item names, guide book text, tooltips, traits, modifiers.
+ * English language file of the overhaul build: stations, molds, generic
+ * parts, materials (TiC 3 stats), the guide book and tooltips.
  */
 public class ModLangProvider extends FabricLanguageProvider {
 
-	protected ModLangProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
-		super(output, registryLookup);
-	}
+        protected ModLangProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
+                super(output, registryLookup);
+        }
 
-	private static String title(String s) {
-		return s.substring(0, 1).toUpperCase() + s.substring(1);
-	}
+        private static String title(String s) {
+                return s.substring(0, 1).toUpperCase() + s.substring(1);
+        }
 
-	@Override
-	public void generateTranslations(HolderLookup.Provider registryLookup, TranslationBuilder builder) {
-		// creative tab
-		builder.add("itemGroup.modular_dreams", "Modular Dreams");
+        /** Display names for materials (used in tool names and part items). */
+        private static String materialName(String id) {
+                return switch (id) {
+                        case "wood" -> "Wooden";
+                        default -> title(id.replace('_', ' '));
+                };
+        }
 
-		// modular equipment
-		builder.add("item.modular_dreams.modular_pickaxe", "Modular Pickaxe");
-		builder.add("item.modular_dreams.modular_pickaxe.named", "%s Modular Pickaxe");
-		builder.add("item.modular_dreams.modular_axe", "Modular Axe");
-		builder.add("item.modular_dreams.modular_axe.named", "%s Modular Axe");
-		builder.add("item.modular_dreams.modular_shovel", "Modular Shovel");
-		builder.add("item.modular_dreams.modular_shovel.named", "%s Modular Shovel");
-		builder.add("item.modular_dreams.modular_hoe", "Modular Hoe");
-		builder.add("item.modular_dreams.modular_hoe.named", "%s Modular Hoe");
-		builder.add("item.modular_dreams.modular_sword", "Modular Sword");
-		builder.add("item.modular_dreams.modular_sword.named", "%s Modular Sword");
-		builder.add("item.modular_dreams.modular_mace", "Modular Mace");
-		builder.add("item.modular_dreams.modular_mace.named", "%s Modular Mace");
-		builder.add("item.modular_dreams.modular_spear", "Modular Spear");
-		builder.add("item.modular_dreams.modular_spear.named", "%s Modular Spear");
-		builder.add("item.modular_dreams.modular_helmet", "Modular Helmet");
-		builder.add("item.modular_dreams.modular_helmet.named", "%s Modular Helmet");
-		builder.add("item.modular_dreams.modular_chestplate", "Modular Chestplate");
-		builder.add("item.modular_dreams.modular_chestplate.named", "%s Modular Chestplate");
-		builder.add("item.modular_dreams.modular_leggings", "Modular Leggings");
-		builder.add("item.modular_dreams.modular_leggings.named", "%s Modular Leggings");
-		builder.add("item.modular_dreams.modular_boots", "Modular Boots");
-		builder.add("item.modular_dreams.modular_boots.named", "%s Modular Boots");
-		builder.add("item.modular_dreams.modular_guidebook", "Materials & You (Guide Book)");
+        /**
+         * Display names for part shapes. The sword's dedicated binding is
+         * called the GUARD in the language file only - the definition keeps
+         * the {@code sword_binding} id.
+         */
+        private static String partName(PartType part) {
+                return switch (part) {
+                        case SWORD_BINDING -> "Sword Guard";
+                        default -> title(part.id.replace('_', ' '));
+                };
+        }
 
-		// part type names
-		builder.add("part.modular_dreams.pickaxe_head", "Pickaxe Head");
-		builder.add("part.modular_dreams.axe_head", "Axe Head");
-		builder.add("part.modular_dreams.shovel_head", "Shovel Head");
-		builder.add("part.modular_dreams.hoe_head", "Hoe Head");
-		builder.add("part.modular_dreams.sword_blade", "Sword Blade");
-		builder.add("part.modular_dreams.sword_guard", "Sword Guard");
-		builder.add("part.modular_dreams.mace_head", "Mace Head");
-		builder.add("part.modular_dreams.spear_head", "Spear Head");
-		builder.add("part.modular_dreams.binding", "Tool Binding");
-		builder.add("part.modular_dreams.handle", "Tool Handle");
-		builder.add("part.modular_dreams.plate", "Armor Plate");
-		builder.add("part.modular_dreams.lining", "Armor Lining");
-		builder.add("part.modular_dreams.material_line", "Material: %s");
+        @Override
+        public void generateTranslations(HolderLookup.Provider registryLookup, TranslationBuilder builder) {
+                // creative tab
+                builder.add("itemGroup.modular_dreams", "Modular Dreams");
 
-		// material names (deduplicated: some materials serve several roles)
-		java.util.Set<String> namedMaterials = new java.util.HashSet<>();
-		java.util.List<ModularMaterial> allMaterials = new java.util.ArrayList<>();
-		allMaterials.addAll(ModMaterials.toolMaterials());
-		allMaterials.addAll(ModMaterials.plateMaterials());
-		allMaterials.addAll(ModMaterials.liningMaterials());
-		for (ModularMaterial material : allMaterials) {
-			if (namedMaterials.add(material.id())) {
-				builder.add(material.nameKey(), title(material.id().replace('_', ' ')));
-			}
-		}
+                // station & mold blocks
+                // (26.3 BlockItems use the ITEM description id -> both the
+                // block.* and the item.* keys are needed)
+                builder.add("block.modular_dreams.part_builder", "Part Builder");
+                builder.add("block.modular_dreams.assembly_table", "Assembly Table");
+                builder.add("block.modular_dreams.clay_mold", "Clay Mold");
+                builder.add("block.modular_dreams.terracotta_mold", "Terracotta Mold");
+                builder.add("block.modular_dreams.melting_upgrade", "Melting Upgrade");
+                builder.add("block.modular_dreams.melting_furnace", "Melting Furnace");
+                builder.add("item.modular_dreams.part_builder", "Part Builder");
+                builder.add("item.modular_dreams.assembly_table", "Assembly Table");
+                builder.add("item.modular_dreams.clay_mold", "Clay Mold");
+                builder.add("item.modular_dreams.terracotta_mold", "Terracotta Mold");
+                builder.add("item.modular_dreams.melting_upgrade", "Melting Upgrade");
+                builder.add("container.modular_dreams.part_builder", "Part Builder");
+                builder.add("container.modular_dreams.assembly_table", "Assembly Table");
+                builder.add("container.modular_dreams.melting_upgrade", "Melting Upgrade");
+                builder.add("container.modular_dreams.need_material", "Not enough material!");
+                builder.add("container.modular_dreams.cost", "Cost: %s material(s)");
+                builder.add("container.modular_dreams.select_part", "Select a part shape:");
 
-		// part items: "<Material> <Part>" (e.g. "Iron Pickaxe Head")
-		for (PartType part : PartType.values()) {
-			for (ModularMaterial material : part.allowedMaterials()) {
-				builder.add("item.modular_dreams." + material.id() + "_" + part.id,
-						title(material.id().replace('_', ' ')) + " " + title(part.id.replace('_', ' ')));
-			}
-		}
+                // modular equipment
+                builder.add("item.modular_dreams.modular_pickaxe", "Modular Pickaxe");
+                builder.add("item.modular_dreams.modular_pickaxe.named", "%s Modular Pickaxe");
+                builder.add("item.modular_dreams.modular_axe", "Modular Axe");
+                builder.add("item.modular_dreams.modular_axe.named", "%s Modular Axe");
+                builder.add("item.modular_dreams.modular_shovel", "Modular Shovel");
+                builder.add("item.modular_dreams.modular_shovel.named", "%s Modular Shovel");
+                builder.add("item.modular_dreams.modular_hoe", "Modular Hoe");
+                builder.add("item.modular_dreams.modular_hoe.named", "%s Modular Hoe");
+                builder.add("item.modular_dreams.modular_sword", "Modular Sword");
+                builder.add("item.modular_dreams.modular_sword.named", "%s Modular Sword");
+                builder.add("item.modular_dreams.modular_spear", "Modular Spear");
+                builder.add("item.modular_dreams.modular_spear.named", "%s Modular Spear");
+                builder.add("item.modular_dreams.modular_guidebook", "Materials & You (Guide Book)");
 
-		// traits
-		addTrait(builder, ModTraits.FIERY, "Fiery", "Strikes ignite your enemies.");
-		addTrait(builder, ModTraits.DENSE, "Dense", "Extremely hard — takes 20% less durability damage.");
-		addTrait(builder, ModTraits.FEATHERWEIGHT, "Featherweight", "Light and nimble: +0.15 attack speed.");
-		addTrait(builder, ModTraits.RESONANT, "Resonant", "Resonates with the tool: +10% mining speed.");
-		addTrait(builder, ModTraits.PRECIOUS, "Precious", "A flawless gem — the tool softly glimmers.");
-		addTrait(builder, ModTraits.GILDED, "Gilded", "Attracted to magic: +3 enchantability.");
-		addTrait(builder, ModTraits.ROOTED, "Rooted", "Living material — also repairable with sticks.");
-		addTrait(builder, ModTraits.SPIKY, "Spiky", "Crude but vicious edges: +0.5 attack damage.");
-		addTrait(builder, ModTraits.STURDY, "Sturdy", "Dependable: +5% durability per sturdy part.");
-		addTrait(builder, ModTraits.FIREPROOF, "Fireproof", "Immune to fire and lava.");
-		addTrait(builder, ModTraits.CUSHIONED, "Cushioned", "Soft padding: increases safe fall distance.");
-		addTrait(builder, ModTraits.FEATHERLIGHT, "Featherlight", "Lighter than air: 15% less fall damage.");
-		addTrait(builder, ModTraits.COZY, "Cozy", "Quiet padding: 15% faster sneaking.");
-		addTrait(builder, ModTraits.AQUATIC, "Aquatic", "Built for water: 20% faster swimming.");
-		addTrait(builder, ModTraits.PLATED, "Plated", "Plated hide: +5% knockback resistance.");
-		addTrait(builder, ModTraits.SOFT, "Soft", "Comfortable padding: +0.5 armor.");
-		addTrait(builder, ModTraits.SPRINGY, "Springy", "Springy hide: slightly stronger jumps.");
+                // molds (both are the block items of their block)
+                builder.add("tooltip.modular_dreams.mold_shape", "Shaped into: %s");
+                builder.add("tooltip.modular_dreams.mold_unshaped", "Unshaped - right-click a placed CLAY mold with a part");
+                builder.add("tooltip.modular_dreams.mold_uses", "Uses left: %s");
 
-		// modifiers
-		addModifier(builder, "hasty", "Hasty", "+30% mining speed per level.");
-		addModifier(builder, "sharp", "Sharp", "+1 attack damage per level.");
-		addModifier(builder, "lucky", "Lucky", "Adds Fortune (digging tools) or Looting (weapons), level equals modifier level.");
-		addModifier(builder, "silky", "Silky", "Adds Silk Touch to the tool.");
-		addModifier(builder, "fiery", "Fiery", "Sets targets on fire; longer with each level.");
-		addModifier(builder, "grippy", "Grippy", "+0.1 attack speed per level.");
-		addModifier(builder, "bouncy", "Bouncy", "+0.5 attack knockback per level.");
-		addModifier(builder, "reinforced", "Reinforced", "15% less durability damage per level.");
-		addModifier(builder, "diamonded", "Diamonded", "+500 max durability.");
-		addModifier(builder, "emeraled", "Emeraled", "+50% max durability.");
-		addModifier(builder, "netherited", "Netherited", "Upgrades the tool to netherite mining tier and makes it fireproof.");
-		addModifier(builder, "solid", "Solid", "+10% knockback resistance per level.");
-		addModifier(builder, "featherfall", "Featherfall", "20% less fall damage per level.");
-		addModifier(builder, "swift_swim", "Swift Swim", "25% faster swimming per level.");
-		addModifier(builder, "sneaky", "Sneaky", "25% faster sneaking per level.");
+                // guide book page indicator (bottom of the page, between the arrows)
+                builder.add("guide.modular_dreams.book.page", "Page %s of %s");
 
-		// tooltips
-		builder.add("tooltip.modular_dreams.parts", "Parts:");
-		builder.add("tooltip.modular_dreams.modifiers", "Modifiers:");
+                // part type names (one universal handle + one universal
+                // binding + dedicated sword/spear bindings, per-tool heads)
+                for (PartType part : PartType.values()) {
+                        builder.add(part.translationKey(), partName(part));
+                }
+                builder.add("part.modular_dreams.material_line", "Material: %s");
 
-		// equipment type names (used in the guide)
-		builder.add("equipment.modular_dreams.pickaxe", "Pickaxe");
-		builder.add("equipment.modular_dreams.axe", "Axe");
-		builder.add("equipment.modular_dreams.shovel", "Shovel");
-		builder.add("equipment.modular_dreams.hoe", "Hoe");
-		builder.add("equipment.modular_dreams.sword", "Sword");
-		builder.add("equipment.modular_dreams.mace", "Mace");
-		builder.add("equipment.modular_dreams.spear", "Spear");
+                // material names
+                for (ModularMaterial material : ModMaterials.materials()) {
+                        builder.add(material.nameKey(), materialName(material.id()));
+                }
 
-		// advancements
-		builder.add("advancements.modular_dreams.root.title", "Modular Dreams");
-		builder.add("advancements.modular_dreams.root.description",
-				"Build equipment from parts instead of replacing it. Read Materials & You to get started!");
-		builder.add("advancements.modular_dreams.first_tool.title", "It's Alive!");
-		builder.add("advancements.modular_dreams.first_tool.description",
-				"Assemble your first modular tool from a head, a binding and a handle.");
-		builder.add("advancements.modular_dreams.modded.title", "Fully Loaded");
-		builder.add("advancements.modular_dreams.modded.description",
-				"Apply 3 different modifiers to a single piece of equipment.");
+                // part items: "<Material> <Part>" (e.g. "Iron Pickaxe Head")
+                for (PartType part : PartType.values()) {
+                        for (ModularMaterial material : part.allowedMaterials()) {
+                                builder.add("item.modular_dreams." + material.id() + "_" + part.id,
+                                                materialName(material.id()) + " " + partName(part));
+                        }
+                }
 
-		addGuideText(builder);
-	}
+                // traits (only EMPTY is used in the current overhaul step)
+                addTrait(builder, ModTraits.EMPTY, "Empty", "A placeholder - real traits come with the next update.");
 
-	private void addTrait(TranslationBuilder builder, ModTraits trait, String name, String desc) {
-		builder.add(trait.nameKey(), name);
-		builder.add(trait.descriptionKey(), desc);
-	}
+                // tooltips
+                builder.add("tooltip.modular_dreams.parts", "Parts:");
+                builder.add("tooltip.modular_dreams.modifiers", "Modifiers:");
+                builder.add("tooltip.modular_dreams.durability", "Durability: %s / %s");
 
-	private void addModifier(TranslationBuilder builder, String id, String name, String desc) {
-		builder.add("modifier.modular_dreams." + id, name);
-		builder.add("modifier.modular_dreams." + id + ".desc", desc);
-	}
+                // equipment type names (used in the guide)
+                builder.add("equipment.modular_dreams.pickaxe", "Pickaxe");
+                builder.add("equipment.modular_dreams.axe", "Axe");
+                builder.add("equipment.modular_dreams.shovel", "Shovel");
+                builder.add("equipment.modular_dreams.hoe", "Hoe");
+                builder.add("equipment.modular_dreams.sword", "Sword");
+                builder.add("equipment.modular_dreams.spear", "Spear");
 
-	private void addGuideText(TranslationBuilder builder) {
-		builder.add("guide.modular_dreams.title", "Materials & You");
-		builder.add("guide.modular_dreams.intro.1",
-				"Why throw away a worn-out tool when you can repair and upgrade it? Modular Dreams lets you build vanilla tools, weapons and armor from parts made of vanilla materials.");
-		builder.add("guide.modular_dreams.intro.2", "Keep this book handy - it documents every material, part and modifier.");
-		builder.add("guide.modular_dreams.intro.3", "- The Modular Dreams Team");
-		builder.add("guide.modular_dreams.intro.philosophy.title", "Philosophy");
-		builder.add("guide.modular_dreams.intro.philosophy.1",
-				"Modular tools cost a little more material than their vanilla counterparts, but they are an investment: repair them forever, re-purpose them with new parts and enhance them with modifiers.");
-		builder.add("guide.modular_dreams.intro.philosophy.2",
-				"Stats are inherited from the materials of each part. A pickaxe with an iron head mines like iron; a spruce handle adds durability. Mix and match to shape the tool you need.");
-		builder.add("guide.modular_dreams.intro.parts.title", "Tool Parts");
-		builder.add("guide.modular_dreams.intro.parts.1", "Every tool is assembled from these parts, each crafted from a vanilla material:");
-		builder.add("guide.modular_dreams.intro.armor_parts.title", "Armor Parts");
-		builder.add("guide.modular_dreams.intro.armor_parts.1", "Armor uses two part kinds: sturdy plates define your protection, and the lining adds comfort and utility.");
-		builder.add("guide.modular_dreams.started.1.title", "Getting Started");
-		builder.add("guide.modular_dreams.started.1.1",
-				"1. Craft part items from a material (e.g. 3 iron ingots in a row make an Iron Pickaxe Head).");
-		builder.add("guide.modular_dreams.started.1.2",
-				"2. Combine the parts in a crafting table in any arrangement to assemble your tool.");
-		builder.add("guide.modular_dreams.started.2.title", "Assembly Recipes");
-		builder.add("guide.modular_dreams.started.2.1",
-				"Pickaxe/Axe/Spear: head + binding + handle. Sword: blade + guard + handle. Shovel/Hoe/Mace: head + handle.");
-		builder.add("guide.modular_dreams.started.2.2",
-				"Armor: Helmet 3 plates + lining, Chestplate 4 plates + lining, Leggings 3 plates + lining, Boots 2 plates + lining.");
-		builder.add("guide.modular_dreams.started.2.3", "Turtle scute plates only fit the helmet - it is a shell, not sheet metal!");
-		builder.add("guide.modular_dreams.started.3.title", "The Part Choice");
-		builder.add("guide.modular_dreams.started.3.1",
-				"The HEAD defines mining speed, mining tier and adds the most attack damage. The HANDLE multiplies durability and can add attack speed. The BINDING adds even more durability and can grant traits.");
-		builder.add("guide.modular_dreams.started.3.2",
-				"Example: an iron head on a spruce handle with an amethyst binding is fast, durable and resonant.");
-		builder.add("guide.modular_dreams.started.3.3",
-				"Lining choice matters too: slime cushions falls, phantom membrane lightens them, wool quiets your steps.");
-		builder.add("guide.modular_dreams.tools.title", "Tools & Weapons");
-		builder.add("guide.modular_dreams.tools.1",
-				"Modular versions exist of every classic tool plus the mace and the spear. The mace keeps its full smash attack; the spear keeps its charged dash - both scale with your head material.");
-		builder.add("guide.modular_dreams.tools.2", "Modular tools can do anything their vanilla counterparts can: enchant them, trim armor, repair with mending...");
-		builder.add("guide.modular_dreams.tools.stats.title", "Tool Stats");
-		builder.add("guide.modular_dreams.tools.stats.durability", "Durability: how much use before repair (head + handle + binding bonuses).");
-		builder.add("guide.modular_dreams.tools.stats.speed", "Mining speed: blocks per second multiplier (head material).");
-		builder.add("guide.modular_dreams.tools.stats.tier", "Mining tier: which blocks drop loot (head material).");
-		builder.add("guide.modular_dreams.tools.stats.damage", "Attack damage: tool base + head material.");
-		builder.add("guide.modular_dreams.tools.stats.attackspeed", "Attack speed: swings per second x4 (handle can improve it).");
-		builder.add("guide.modular_dreams.tools.stats.enchantability", "Enchantability: better books, better enchants.");
-		builder.add("guide.modular_dreams.tools.stats.note", "Every stat can be tuned with modifiers and traits - build the tool you want.");
-		builder.add("guide.modular_dreams.tools.mace.title", "The Mace");
-		builder.add("guide.modular_dreams.tools.mace.1",
-				"The modular mace keeps the vanilla smash attack: fall further, hit harder. Its density comes from the head material.");
-		builder.add("guide.modular_dreams.tools.mace.2", "An obsidian or netherite head makes a truly brutal mace.");
-		builder.add("guide.modular_dreams.tools.spear.title", "The Spear");
-		builder.add("guide.modular_dreams.tools.spear.1",
-				"The modular spear keeps the vanilla charge: sprint or ride to strike with reach and momentum. Its damage grows with the head material.");
-		builder.add("guide.modular_dreams.tools.spear.2", "Pair it with the Bouncy modifier for devastating cavalry charges.");
-		builder.add("guide.modular_dreams.materials.title", "Tool Materials");
-		builder.add("guide.modular_dreams.materials.intro.1",
-				"Every material has a role: woods are cheap handles, stones are honest heads, metals are dependable, gems are exceptional.");
-		builder.add("guide.modular_dreams.materials.intro.2", "The following pages list every tool material. Durability and speed apply to heads; handle/binding show their durability bonus.");
-		builder.add("guide.modular_dreams.material.durability", "Durability:");
-		builder.add("guide.modular_dreams.material.speed", "Mining speed:");
-		builder.add("guide.modular_dreams.material.damage", "Attack damage:");
-		builder.add("guide.modular_dreams.material.enchantability", "Enchantability:");
-		builder.add("guide.modular_dreams.material.handle", "Handle durability:");
-		builder.add("guide.modular_dreams.material.binding", "Binding durability:");
-		builder.add("guide.modular_dreams.material.tier", "Tier:");
-		builder.add("guide.modular_dreams.armor.title", "Modular Armor");
-		builder.add("guide.modular_dreams.armor.1",
-				"Modular armor is assembled from plates and a lining. Plates define defense, toughness and durability; the lining adds utility and a little extra enchantability.");
-		builder.add("guide.modular_dreams.armor.2", "Armor made of a material looks and protects like its vanilla counterpart - iron plates look like iron armor.");
-		builder.add("guide.modular_dreams.armor.stats.title", "Armor Stats");
-		builder.add("guide.modular_dreams.armor.stats.durability", "Durability: plate multiplier x slot factor x (1 + lining bonus).");
-		builder.add("guide.modular_dreams.armor.stats.defense", "Defense: armor points from the plate material.");
-		builder.add("guide.modular_dreams.armor.stats.toughness", "Toughness: reduces heavy hits (diamond, netherite).");
-		builder.add("guide.modular_dreams.armor.stats.knockback", "Knockback resistance: from netherite and armadillo plates.");
-		builder.add("guide.modular_dreams.armor.stats.enchantability", "Enchantability: plate value + lining bonus.");
-		builder.add("guide.modular_dreams.armor.stats.note", "Armor accepts trims, enchantments and all armor modifiers.");
-		builder.add("guide.modular_dreams.armor.plates.title", "Plates & Linings");
-		builder.add("guide.modular_dreams.armor.plates.1", "Defense values are listed as boots/legs/chest/helmet.");
-		builder.add("guide.modular_dreams.armor.material.durability", "Durability:");
-		builder.add("guide.modular_dreams.armor.material.defense", "Defense (B/L/C/H):");
-		builder.add("guide.modular_dreams.armor.material.toughness", "Toughness:");
-		builder.add("guide.modular_dreams.armor.material.enchantability", "Enchantability:");
-		builder.add("guide.modular_dreams.armor.material.lining_durability", "Durability bonus:");
-		builder.add("guide.modular_dreams.armor.material.lining_enchantability", "Enchantability bonus:");
-		builder.add("guide.modular_dreams.modifiers.title", "Modifiers");
-		builder.add("guide.modular_dreams.modifiers.1",
-				"Modifiers upgrade assembled equipment. Place the item and the cost in a crafting grid - no station needed. Levels stack up to the maximum.");
-		builder.add("guide.modular_dreams.modifiers.2", "Tool modifiers only fit tools, armor modifiers only fit armor, and universal ones fit both. The next pages list every modifier and its cost.");
-		builder.add("guide.modular_dreams.modifiers.list.title", "Modifier List");
-		builder.add("guide.modular_dreams.repair.title", "Repairing");
-		builder.add("guide.modular_dreams.repair.1",
-				"Combine a damaged item with ONE repair material in a crafting grid to restore 10% of its max durability. Repeat as often as you like - the item is never consumed.");
-		builder.add("guide.modular_dreams.repair.2",
-				"What repairs what? Tools: their head material's crafting item (iron ingots repair iron heads). Armor: the plate material's repair items. Wood handles also accept sticks.");
-		builder.add("guide.modular_dreams.repair.advanced.title", "Repairing, continued");
-		builder.add("guide.modular_dreams.repair.3",
-				"Anvils and Mending work too - modular items know their repair items. Enchanted gear keeps every enchantment and modifier while being repaired.");
-		builder.add("guide.modular_dreams.repair.4",
-				"Note: upgrade modifiers cost 2 or more of their item, so a single item always repairs instead of upgrading.");
-		builder.add("guide.modular_dreams.tips.title", "Tips & Tricks");
-		builder.add("guide.modular_dreams.tips.1",
-				"- A gold binding gilds any tool with +3 enchantability.\n- An amethyst binding resonates: +10% mining speed.\n- Bone handles swing faster; obsidian heads shrug off damage.\n- Netherite parts are fireproof - and so is your gear.");
-		builder.add("guide.modular_dreams.tips.2",
-				"- Hasty + resonant + diamond head = instant mining.\n- Turtle shell helmets swim; slime linings land softly.\n- You can re-craft improved versions any time - parts are never wasted, and repairs keep gear alive forever.");
-	}
+                // advancements
+                builder.add("advancements.modular_dreams.root.title", "Modular Dreams");
+                builder.add("advancements.modular_dreams.root.description",
+                                "Build equipment from parts instead of replacing it. Read Materials & You to get started!");
+                builder.add("advancements.modular_dreams.first_tool.title", "It's Alive!");
+                builder.add("advancements.modular_dreams.first_tool.description",
+                                "Assemble your first modular tool from a handle, a binding and a head.");
+                builder.add("advancements.modular_dreams.modded.title", "Fully Loaded");
+                builder.add("advancements.modular_dreams.modded.description",
+                                "Apply 3 different modifiers to a single piece of equipment.");
+
+                addGuideText(builder);
+        }
+
+        private void addTrait(TranslationBuilder builder, ModTraits trait, String name, String desc) {
+                builder.add(trait.nameKey(), name);
+                builder.add(trait.descriptionKey(), desc);
+        }
+
+        private void addGuideText(TranslationBuilder builder) {
+                builder.add("guide.modular_dreams.title", "Materials & You");
+                builder.add("guide.modular_dreams.intro.1",
+                                "Why throw away a worn-out tool when you can repair and upgrade it? Modular Dreams lets you build vanilla tools and weapons from generic parts made of vanilla materials.");
+                builder.add("guide.modular_dreams.intro.2",
+                                "Keep this book handy - it documents every station, material and part.");
+                builder.add("guide.modular_dreams.intro.3", "- The Modular Dreams Team");
+                builder.add("guide.modular_dreams.book.flow.title", "The Flow");
+                builder.add("guide.modular_dreams.book.flow.1",
+                                "1. PART BUILDER - shape raw materials into generic parts. All woods make wooden parts; there is no oak or cherry, just wood.");
+                builder.add("guide.modular_dreams.book.flow.2",
+                                "2. ASSEMBLY TABLE - combine a handle, a binding and a head of one tool type into the finished tool.");
+                builder.add("guide.modular_dreams.book.flow.3",
+                                "3. MELTING - copper, iron and gold parts cannot be carved; melt ingots in a furnace with a Melting Upgrade and cast them in molds.");
+                builder.add("guide.modular_dreams.intro.philosophy.title", "Philosophy");
+                builder.add("guide.modular_dreams.intro.philosophy.1",
+                                "Modular tools cost a little more material than their vanilla counterparts, but they are an investment: repair them forever and re-purpose them with new parts.");
+                builder.add("guide.modular_dreams.intro.philosophy.2",
+                                "Stats are inherited from the materials of each part. An iron head mines like iron; a bone handle trades durability for speed. Mix and match to shape the tool you need.");
+                builder.add("guide.modular_dreams.intro.parts.title", "Tool Parts");
+                builder.add("guide.modular_dreams.intro.parts.1",
+                                "Every tool is assembled from exactly three parts - a head, a binding and a handle. There is ONE universal handle and ONE universal binding that fit every tool of their kind, including the sword and the spear; those two simply render with their own special shapes (the sword's binding is called the Guard)." );
+                builder.add("guide.modular_dreams.book.started.partbuilder.title", "The Part Builder");
+                builder.add("guide.modular_dreams.book.started.partbuilder.1",
+                                "The PART BUILDER works like a stonecutter: drop a material into the input slot, click the part shape you want from the grid, and take it from the output slot.");
+                builder.add("guide.modular_dreams.book.started.partbuilder.2",
+                                "Any planks make generic wooden parts; cobblestone makes stone parts. Flint, bone, leather, vine, string, slime and blaze/breeze rods have their own parts.");
+                builder.add("guide.modular_dreams.book.started.partbuilder.3",
+                                "Each shape costs a few units of material - a pickaxe head takes 3, a binding 2, a shovel head 1.");
+                builder.add("guide.modular_dreams.book.started.partbuilder.4",
+                                "Metals cannot be carved: copper, iron and gold parts must be melted (see the Molds chapter).");
+                builder.add("guide.modular_dreams.started.2.title", "The Assembly Table");
+                builder.add("guide.modular_dreams.started.2.1",
+                                "The ASSEMBLY TABLE has three input slots in fixed order: HEAD on top, BINDING in the middle, HANDLE at the bottom.");
+                builder.add("guide.modular_dreams.started.2.2",
+                                "Place the three parts of one tool type into their slots and the assembled tool appears on the right. The parts stay in the table when you close it.");
+                builder.add("guide.modular_dreams.started.2.3",
+                                "The head decides the tool type. The universal handle and the universal binding fit every tool - even a sword or a spear - and each tool just renders its own special part shapes (the sword's binding is the Guard).");
+                builder.add("guide.modular_dreams.molds.title", "Clay Molds");
+                builder.add("guide.modular_dreams.molds.1",
+                                "Craft a CLAY MOLD from four clay balls and place it on the ground - both molds sit flat like a cutting board.");
+                builder.add("guide.modular_dreams.molds.2",
+                                "Right-click the placed CLAY mold with any part to press that shape into the clay. The part is only a template - it is not consumed. The mold surface is CUT OUT where the part would sit, leaving a real mold cavity. Terracotta molds cannot be shaped by hand: they keep the shape they were baked with.");
+                builder.add("guide.modular_dreams.molds.3",
+                                "Break the shaped mold to pick it up, then cook it in a furnace: clay molds become TERRACOTTA molds of the same shape. The terracotta mold is a block too - you can place it down just like the clay one.");
+                builder.add("guide.modular_dreams.molds.4",
+                                "A clay mold can be used directly for one casting, but it breaks afterwards. A terracotta mold survives three casts.");
+                builder.add("guide.modular_dreams.molds.melting.title", "The Melting Upgrade");
+                builder.add("guide.modular_dreams.molds.melting.1",
+                                "Place a MELTING UPGRADE directly UNDERNEATH a furnace, then insert a shaped mold: right-click the upgrade with the mold, or open it (right-click with anything else) and drop the mold into the bottom slot.");
+                builder.add("guide.modular_dreams.molds.melting.2",
+                                "Put copper, iron or gold ingots into the furnace's top slot. With a mold inserted, the metal melts down instead of sitting idle.");
+                builder.add("guide.modular_dreams.molds.melting.3",
+                                "Each melted ingot fills the mold: the finished part appears in the MELTING UPGRADE's GUI, in the slot above the mold. The mold loses one use per cast.");
+                builder.add("guide.modular_dreams.molds.melting.4",
+                                "Metals work for every head, binding and handle. Without a mold nothing melts - the ingots simply wait.");
+                builder.add("guide.modular_dreams.materials.title", "Materials");
+                builder.add("guide.modular_dreams.materials.intro.1",
+                                "Head stats are copied from Tinkers' Construct. Handles change durability by a percentage, bindings add a small flat bonus.");
+                builder.add("guide.modular_dreams.materials.intro.2",
+                                "Materials without head stats (leather, vine, string, slime) are binding-only; blaze and breeze rods are handle-only with iron-like handles.");
+                builder.add("guide.modular_dreams.material.tier", "tier");
+                builder.add("guide.modular_dreams.material.no_head", "Binding only - cannot be used as a head.");
+                builder.add("guide.modular_dreams.material.durability", "Head durability:");
+                builder.add("guide.modular_dreams.material.speed", "Head mining speed:");
+                builder.add("guide.modular_dreams.material.damage", "Head attack:");
+                builder.add("guide.modular_dreams.material.enchantability", "Enchantability:");
+                builder.add("guide.modular_dreams.material.handle", "Handle (multiplier / bonus):");
+                builder.add("guide.modular_dreams.material.binding", "Binding bonus:");
+                builder.add("guide.modular_dreams.tools.title", "Tools & Stats");
+                builder.add("guide.modular_dreams.tools.1",
+                                "Tool durability = (head durability + binding bonus) x handle multiplier + handle bonus, then x the tool's own multiplier.");
+                builder.add("guide.modular_dreams.tools.2",
+                                "Mining speed and mining tier come from the head; attack damage comes from the head plus the tool type.");
+                builder.add("guide.modular_dreams.tools.stats.title", "Stat Lines");
+                builder.add("guide.modular_dreams.tools.stats.durability", "Durability:");
+                builder.add("guide.modular_dreams.tools.stats.speed", "Mining speed:");
+                builder.add("guide.modular_dreams.tools.stats.tier", "Mining tier:");
+                builder.add("guide.modular_dreams.tools.stats.damage", "Attack damage:");
+                builder.add("guide.modular_dreams.tools.stats.attackspeed", "Attack speed:");
+                builder.add("guide.modular_dreams.tools.stats.enchantability", "Enchantability:");
+                builder.add("guide.modular_dreams.tools.stats.note",
+                                "Every assembled tool shows its parts, materials and exact stats in the tooltip.");
+                builder.add("guide.modular_dreams.tools.spear.title", "The Spear");
+                builder.add("guide.modular_dreams.tools.spear.1",
+                                "The modular spear reaches further than any vanilla weapon - charge the attack to stab from range.");
+                builder.add("guide.modular_dreams.tools.spear.2",
+                                "It can also be thrown by holding use, trading the tool itself for a long-range hit.");
+                builder.add("guide.modular_dreams.book.tab.intro", "Introduction");
+                builder.add("guide.modular_dreams.book.tab.started", "Getting Started");
+                builder.add("guide.modular_dreams.book.tab.molds", "Molds & Melting");
+                builder.add("guide.modular_dreams.book.tab.materials", "Materials");
+                builder.add("guide.modular_dreams.book.tab.tools", "Tools & Stats");
+                builder.add("guide.modular_dreams.book.tab.tips", "Tips");
+                builder.add("guide.modular_dreams.tips.title", "Tips & Tricks");
+                builder.add("guide.modular_dreams.book.tips.b1",
+                                "A flint head is cheaper than bone and nearly as fast - great for early tools.");
+                builder.add("guide.modular_dreams.book.tips.b2",
+                                "An iron handle multiplies durability by 1.1; a wooden handle adds a small bonus and keeps things cheap.");
+                builder.add("guide.modular_dreams.book.tips.b3",
+                                "Blaze rod handles have iron-like handles - useful when wood is scarce, like in the Nether.");
+                builder.add("guide.modular_dreams.book.tips.b4",
+                                "Gold parts mine extremely fast but break quickly - pair a gold head with an iron handle to soften the blow.");
+                builder.add("guide.modular_dreams.book.tips.b5",
+                                "Terracotta molds last three casts - bake your clay molds before big casting sessions.");
+                builder.add("guide.modular_dreams.book.tips.b6",
+                                "Repair your tools with the material of their head: iron ingots for iron, planks for wood.");
+                builder.add("guide.modular_dreams.book.tips.b7",
+                                "Parts of the same material stack neatly in chests - generic parts mean fewer item types.");
+                builder.add("guide.modular_dreams.book.tips.b8",
+                                "The melting upgrade works while the furnace does other things - keep it fed with ingots.");
+                builder.add("guide.modular_dreams.book.tips.b9",
+                                "Modifiers and real material traits return in a future update - the Empty trait is a placeholder.");
+                builder.add("guide.modular_dreams.book.tips.b10",
+                                "Diamond and netherite are not part of this build yet - they arrive with a later update.");
+        }
 }

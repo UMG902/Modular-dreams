@@ -1,0 +1,8 @@
+{
+  "type": "modular_dreams:part_builder",
+  "cost": 2,
+  "ingredient": "minecraft:string",
+  "result": {
+    "id": "modular_dreams:string_sword_binding"
+  }
+}

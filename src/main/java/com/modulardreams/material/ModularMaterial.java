@@ -1,118 +1,76 @@
 package com.modulardreams.material;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import net.minecraft.core.Holder;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.equipment.ArmorType;
-import net.minecraft.world.item.equipment.EquipmentAsset;
-import net.minecraft.resources.ResourceKey;
+import java.util.function.Supplier;
+
+import net.minecraft.world.item.crafting.Ingredient;
 
 import com.modulardreams.stats.ModTraits;
 
 /**
- * Definition of one vanilla material inside Modular Dreams.
+ * Definition of one material inside Modular Dreams (overhaul step 1: tools).
  *
- * A material may be usable for tool parts (stats in the first block), for armor
- * plates ({@link Plate}), for armor linings ({@link Lining}) or for several of
- * those roles at once. Traits follow the Tinkers' philosophy: they are derived
- * from the material's existing vanilla uses and characteristics.
+ * <p>Stats follow Tinkers' Construct 3.12 (1.20.1) wherever TiC defines the
+ * material: head values are copied verbatim, the TiC handle durability
+ * percentage becomes the LC-style handle multiplier ({@code 1 + p}), and
+ * TiC's statless bindings keep no bonus - except the materials that ONLY
+ * exist as bindings, which keep a small flat bonus so they have a use.
+ * Stone has no TiC 3 equivalent (flint covers it), so it keeps the
+ * TiC 1.12 / Legacy's Construct values; gold heads use vanilla gold-tool
+ * stats; blaze and breeze rods use iron-like handle stats per design.
  *
  * @param id                 machine id, e.g. "iron"
- * @param repairTag          items repairing tools with this material (head/handle)
+ * @param color              material tint (RGB) applied to grayscale part textures
+ * @param crafting           ingredient the Part Builder accepts for this material
+ *                           (tags allowed - e.g. any planks build generic wood parts)
+ * @param repairTag          items repairing tools whose HEAD is this material
  * @param tier               mining tier of tools whose head is made of this
- * @param durability         base tool durability when used as a head
- * @param speed              base mining speed when used as a head
- * @param attackDamageBonus  attack damage bonus when used as a head
- * @param enchantmentValue   enchantability contribution
- * @param handleDurability   multiplier added to durability when used as a handle (0.25 = +25%)
- * @param handleSpeed        flat attack speed bonus when used as a handle
- * @param bindingDurability  multiplier added to durability when used as a binding
+ * @param durability         head durability (TiC 3: iron = 250, wood = 60)
+ * @param speed              head mining speed (TiC 3: iron = 6.0, wood = 2.0)
+ * @param attackDamageBonus  head attack stat (TiC 3: iron = 2.0, flint = 1.25)
+ * @param enchantmentValue   enchantability contribution (from the head)
+ * @param handleModifier     durability multiplier of the tool when used as the
+ *                           handle (TiC 3 handle % + 1: iron = 1.1, flint = 0.85)
+ * @param handleDurabilityBonus flat durability added by the handle (TiC 3: always 0)
+ * @param extraDurabilityBonus  flat durability added when used as a binding
  * @param traits             material traits applied wherever the material is used
+ * @param fireResistant      whether items built from this material resist fire
  */
 public record ModularMaterial(
                 String id,
+                int color,
+                Supplier<Ingredient> craftingSupplier,
                 TagKey<Item> repairTag,
                 MaterialTier tier,
                 int durability,
                 float speed,
                 float attackDamageBonus,
                 int enchantmentValue,
-                float handleDurability,
-                float handleSpeed,
-                float bindingDurability,
+                float handleModifier,
+                int handleDurabilityBonus,
+                int extraDurabilityBonus,
                 List<ModTraits> traits,
-                Plate plate,
-                Lining lining,
                 boolean fireResistant
 ) {
 
-        /**
-         * Armor stats when this material is used as an armor plate.
-         *
-         * @param durabilityMultiplier base durability multiplier (vanilla iron armor = 15)
-         * @param defense              defense points per armor slot
-         * @param toughness            armor toughness
-         * @param knockbackResistance  knockback resistance
-         * @param enchantmentValue     enchantability
-         * @param repairTag            items repairing armor plated with this material
-         * @param asset                vanilla equipment asset reused for armor rendering
-         * @param equipSound           sound played when equipping
-         */
-        public record Plate(
-                        int durabilityMultiplier,
-                        Map<ArmorType, Integer> defense,
-                        float toughness,
-                        float knockbackResistance,
-                        int enchantmentValue,
-                        TagKey<Item> repairTag,
-                        ResourceKey<EquipmentAsset> asset,
-                        Holder<SoundEvent> equipSound
-        ) {}
-
-        /**
-         * Utility stats when this material is used as an armor lining.
-         *
-         * @param durabilityBonus    flat multiplier added to armor durability (0.1 = +10%)
-         * @param enchantmentBonus   extra enchantability
-         * @param attributes         attribute modifiers contributed while worn
-         */
-        public record Lining(
-                        float durabilityBonus,
-                        int enchantmentBonus,
-                        List<AttrBonus> attributes
-        ) {}
-
-        /** One attribute contribution (trait-driven), e.g. slime lining fall protection. */
-        public record AttrBonus(Holder<Attribute> attribute, double amount, AttributeModifier.Operation operation) {}
+        /** The ingredient the Part Builder accepts (built lazily: tags bind after init). */
+        public Ingredient crafting() {
+                return craftingSupplier.get();
+        }
 
         public String nameKey() {
                 return "material.modular_dreams." + id;
-        }
-
-        public boolean isPlate() {
-                return plate != null;
-        }
-
-        public boolean isLining() {
-                return lining != null;
         }
 
         public boolean hasTrait(ModTraits trait) {
                 return traits.contains(trait);
         }
 
-        public Optional<Plate> plateOpt() {
-                return Optional.ofNullable(plate);
-        }
-
-        public Optional<Lining> liningOpt() {
-                return Optional.ofNullable(lining);
+        public Optional<ModTraits> firstTrait() {
+                return traits.isEmpty() ? Optional.empty() : Optional.of(traits.get(0));
         }
 }

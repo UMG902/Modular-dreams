@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "modular_dreams:stone_axe_head"
+    "model": "modular_dreams:axe_head",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -8421505
+      }
+    ]
   }
 }

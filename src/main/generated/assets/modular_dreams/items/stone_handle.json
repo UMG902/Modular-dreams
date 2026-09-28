@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "modular_dreams:stone_handle"
+    "model": "modular_dreams:handle",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -8421505
+      }
+    ]
   }
 }

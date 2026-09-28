@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "modular_dreams:item/modular_chestplate_base",
-    "layer1": "modular_dreams:item/modular_chestplate_overlay_turtle_scute"
-  }
-}

@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "modular_dreams:sword_binding",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -9452714
+      }
+    ]
+  }
+}

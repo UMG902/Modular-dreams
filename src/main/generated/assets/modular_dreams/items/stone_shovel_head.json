@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "modular_dreams:stone_shovel_head"
+    "model": "modular_dreams:shovel_head",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -8421505
+      }
+    ]
   }
 }

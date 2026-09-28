@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "modular_dreams:bone_pickaxe_head"
+    "model": "modular_dreams:pickaxe_head",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -1447972
+      }
+    ]
   }
 }

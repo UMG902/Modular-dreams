@@ -2,11 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "B": "minecraft:book",
-    "I": "minecraft:iron_ingot"
+    "S": "minecraft:stick"
   },
   "pattern": [
     "B",
-    "I"
+    "S"
   ],
   "result": {
     "id": "modular_dreams:modular_guidebook"

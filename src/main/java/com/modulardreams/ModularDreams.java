@@ -27,9 +27,13 @@ public class ModularDreams implements ModInitializer {
                 com.modulardreams.part.PartType.initialize();
                 com.modulardreams.material.ModMaterials.initialize();
                 com.modulardreams.modifier.Modifier.initialize();
+                // part recipe type + serializer must exist before datapack recipes load
+                com.modulardreams.recipe.ModRecipeTypes.initialize();
+                com.modulardreams.network.ModNetworking.initialize();
                 com.modulardreams.registry.ModRegistryAccess.init();
                 com.modulardreams.equipment.ModItems.initialize();
-                com.modulardreams.recipe.ModRecipeSerializers.initialize();
+                com.modulardreams.block.ModBlocks.initialize();
+                com.modulardreams.menu.ModMenuTypes.initialize();
                 com.modulardreams.registry.ModCreativeTabs.initialize();
 
                 LOGGER.info("Modular Dreams initialized. Assemble something wonderful!");

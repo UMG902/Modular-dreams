@@ -1,0 +1,37 @@
+{
+  "variants": {
+    "shape=none": {
+      "model": "modular_dreams:block/clay_mold"
+    },
+    "shape=handle": {
+      "model": "modular_dreams:block/clay_mold_shaped_handle"
+    },
+    "shape=binding": {
+      "model": "modular_dreams:block/clay_mold_shaped_binding"
+    },
+    "shape=pickaxe_head": {
+      "model": "modular_dreams:block/clay_mold_shaped_pickaxe_head"
+    },
+    "shape=axe_head": {
+      "model": "modular_dreams:block/clay_mold_shaped_axe_head"
+    },
+    "shape=shovel_head": {
+      "model": "modular_dreams:block/clay_mold_shaped_shovel_head"
+    },
+    "shape=hoe_head": {
+      "model": "modular_dreams:block/clay_mold_shaped_hoe_head"
+    },
+    "shape=sword_head": {
+      "model": "modular_dreams:block/clay_mold_shaped_sword_head"
+    },
+    "shape=sword_binding": {
+      "model": "modular_dreams:block/clay_mold_shaped_sword_binding"
+    },
+    "shape=spear_head": {
+      "model": "modular_dreams:block/clay_mold_shaped_spear_head"
+    },
+    "shape=spear_binding": {
+      "model": "modular_dreams:block/clay_mold_shaped_spear_binding"
+    }
+  }
+}

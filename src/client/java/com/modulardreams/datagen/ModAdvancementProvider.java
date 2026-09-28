@@ -63,7 +63,6 @@ public class ModAdvancementProvider extends FabricAdvancementProvider {
                                                 ModItems.byName("modular_shovel").orElseThrow(),
                                                 ModItems.byName("modular_hoe").orElseThrow(),
                                                 ModItems.byName("modular_sword").orElseThrow(),
-                                                ModItems.byName("modular_mace").orElseThrow(),
                                                 ModItems.byName("modular_spear").orElseThrow()))
                                 .save(consumer, ModularDreams.id("first_tool"));
 

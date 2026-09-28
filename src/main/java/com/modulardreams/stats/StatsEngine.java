@@ -18,7 +18,6 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
@@ -32,21 +31,20 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.Repairable;
-import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.item.component.AttackRange;
+import net.minecraft.world.item.component.DamageResistant;
 import net.minecraft.world.item.component.KineticWeapon;
 import net.minecraft.world.item.component.PiercingWeapon;
 import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.item.component.UseEffects;
-import net.minecraft.world.item.component.DamageResistant;
 import net.minecraft.world.item.SwingAnimationType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
 import com.modulardreams.ModularDreams;
+import com.modulardreams.component.ModDataComponents;
 import com.modulardreams.component.ModDataComponents.ModularData;
-import com.modulardreams.equipment.ModularArmorType;
 import com.modulardreams.equipment.ModularToolType;
 import com.modulardreams.material.MaterialTier;
 import com.modulardreams.material.ModMaterials;
@@ -54,22 +52,34 @@ import com.modulardreams.material.ModularMaterial;
 import com.modulardreams.modifier.Modifier;
 import com.modulardreams.modifier.Modifier.Effect;
 import com.modulardreams.part.PartType;
+import com.modulardreams.stats.ModTraits;
+import com.modulardreams.stats.StatsEngine;
 
 /**
- * Derives every gameplay stat of an assembled item from its {@link ModularData}
- * and bakes the results into vanilla data components.
+ * Derives every gameplay stat of an assembled tool from its
+ * {@link ModularData} and bakes the results into vanilla data components.
  *
- * The math is Tinkers'-inspired:
+ * <p>The math follows Legacy's Construct (the TiC 1.12.2 port):
  * <ul>
- *   <li>tool durability = head durability x (1 + handle multiplier + binding multiplier)</li>
- *   <li>mining speed &amp; tier come from the head material</li>
- *   <li>attack damage = tool base + head bonus (+ trait/modifier adjustments)</li>
- *   <li>armor durability = plate durability multiplier x slot factor</li>
- *   <li>defense, toughness and knockback resistance come from the plate</li>
+ *   <li>tool durability = (head durability + binding bonus) x handle modifier + handle bonus,
+ *       then x the tool's durability multiplier (sword 1.1, ...)</li>
+ *   <li>mining speed = head speed x the tool's mining multiplier, tier from the head</li>
+ *   <li>attack = (head attack x attack multiplier + base attack) x damage potential</li>
  * </ul>
- * Traits and modifiers then adjust the result before it is baked.
+ * Material stats come from Tinkers' Construct 3.12 (see {@link ModMaterials});
+ * material traits are currently the EMPTY placeholder, so the trait branches
+ * below are dormant until the traits milestone.
  */
 public final class StatsEngine {
+
+        /**
+         * Bump whenever the stat formulas or material values change. Assembled stacks
+         * carry this stamp in {@code modular_dreams:stats_version}; any stack whose
+         * stamp is missing or older is re-baked from its modular data the first time
+         * it ticks in a player inventory (see {@link #refreshIfStale}), so tools from
+         * previous builds automatically adopt the current stats without re-assembly.
+         */
+        public static final int STATS_VERSION = 3;
 
         private StatsEngine() {}
 
@@ -86,9 +96,6 @@ public final class StatsEngine {
                 }
         }
 
-        public record ArmorStats(int durability, int defense, float toughness, float knockbackResistance,
-                        int enchantability) {}
-
         // ------------------------------------------------------------------ public entry points
 
         /** Recomputes all stats of an assembled item and bakes them into vanilla components. */
@@ -96,60 +103,56 @@ public final class StatsEngine {
                 if (data.equipmentType().equals("none")) {
                         return;
                 }
-                Optional<ModularToolType> toolType = ModularToolType.byId(data.equipmentType());
-                if (toolType.isPresent()) {
-                        bakeTool(stack, data, toolType.get());
-                } else {
-                        bakeArmor(stack, data, ModularArmorType.byId(data.equipmentType()));
+                stack.set(ModDataComponents.STATS_VERSION, STATS_VERSION);
+                ModularToolType.byId(data.equipmentType()).ifPresentOrElse(
+                                type -> bakeTool(stack, data, type),
+                                () -> ModularDreams.LOGGER.warn("Unknown equipment type '{}', skipping bake",
+                                                data.equipmentType()));
+        }
+
+        /**
+         * Re-bakes the stack if its stats were computed by an older formula version.
+         * Called from every equipment item's {@code inventoryTick} (server side), so
+         * tools carried over from previous builds silently adopt the current stats
+         * the moment they enter a player inventory - no manual re-assembly required.
+         * Stacks without modular data are ignored.
+         */
+        public static void refreshIfStale(ItemStack stack) {
+                if (stack.getOrDefault(ModDataComponents.STATS_VERSION, 0) == STATS_VERSION) {
+                        return;
                 }
+                ModularData data = stack.get(ModDataComponents.MODULAR_DATA);
+                if (data == null || data.equipmentType().equals("none")) {
+                        return;
+                }
+                bake(stack, data);
         }
 
         // ------------------------------------------------------------------ tool baking
 
         private static void bakeTool(ItemStack stack, ModularData data, ModularToolType type) {
-                PartType headPart = type.headPart();
-                ModularMaterial head = material(data, headPart);
-                Optional<ModularMaterial> handle = materialOpt(data, PartType.HANDLE);
-                Optional<ModularMaterial> binding = type.bindingPart().flatMap(p -> materialOpt(data, p));
+                ModularMaterial head = material(data, type.headPart());
+                ModularMaterial handle = material(data, type.handlePart());
+                ModularMaterial binding = material(data, type.bindingPart());
 
-                // ---- trait / modifier aggregation ----
-                List<ModularMaterial> allParts = new ArrayList<>();
-                allParts.add(head);
-                handle.ifPresent(allParts::add);
-                binding.ifPresent(allParts::add);
+                List<ModularMaterial> allParts = List.of(head, handle, binding);
 
-                int hastyLvl = data.levelOf("hasty");
-                int sharpLvl = data.levelOf("sharp");
-                int grippyLvl = data.levelOf("grippy");
                 int bouncyLvl = data.levelOf("bouncy");
-                int reinforcedLvl = data.levelOf("reinforced");
-                int diamondedLvl = data.levelOf("diamonded");
-                int emeraledLvl = data.levelOf("emeraled");
                 boolean netherited = data.levelOf("netherited") > 0;
 
-                // ---- durability ----
-                float handleMult = handle.map(ModularMaterial::handleDurability).orElse(0.0F);
-                float bindingMult = binding.map(ModularMaterial::bindingDurability).orElse(0.0F);
-                int durability = Math.round(head.durability() * (1.0F + handleMult + bindingMult));
-                int sturdyCount = 0;
-                for (ModularMaterial part : allParts) {
-                        if (part.hasTrait(ModTraits.STURDY)) {
-                                sturdyCount++;
-                        }
-                }
-                durability = Math.round(durability * (1.0F + 0.05F * sturdyCount));
-                float durabilityPct = 0.0F;
-                int durabilityFlat = 0;
-                durabilityPct += modifierSum(data, Effect.DURABILITY_PCT);
-                durabilityFlat += Math.round(modifierSum(data, Effect.DURABILITY_FLAT));
-                durability = Math.round(durability * (1.0F + durabilityPct)) + durabilityFlat;
-                durability = Math.max(1, durability);
+                // ---- durability (Legacy's Construct / TiC 1.12.2 formula) ----
+                // (head + binding bonus) x handle modifier + handle bonus, x tool multiplier
+                float durability = (head.durability() + binding.extraDurabilityBonus()) * handle.handleModifier()
+                                + handle.handleDurabilityBonus();
+                durability *= type.durabilityMultiplier;
+                int bakedDurability = Math.round(durability);
+                float durabilityPct = modifierSum(data, Effect.DURABILITY_PCT);
+                int durabilityFlat = Math.round(modifierSum(data, Effect.DURABILITY_FLAT));
+                int finalDurability = Math.round(bakedDurability * (1.0F + durabilityPct)) + durabilityFlat;
+                finalDurability = Math.max(1, finalDurability);
 
-                // ---- mining speed & tier ----
-                float speed = head.speed();
-                if (binding.isPresent() && binding.get().hasTrait(ModTraits.RESONANT)) {
-                        speed *= 1.10F;
-                }
+                // ---- mining speed & tier (head speed x the tool's mining multiplier) ----
+                float speed = head.speed() * type.miningSpeedMultiplier;
                 speed *= (1.0F + modifierSum(data, Effect.MINING_SPEED_PCT));
 
                 MaterialTier tier = head.tier();
@@ -157,57 +160,69 @@ public final class StatsEngine {
                         tier = tier.max(MaterialTier.NETHERITE);
                 }
 
-                // ---- attack stats ----
-                float damage = type.baseDamage + head.attackDamageBonus();
-                if (head.hasTrait(ModTraits.SPIKY)) {
-                        damage += 0.5F;
-                }
+                // ---- attack stats (LC formula) ----
+                float damage = (head.attackDamageBonus() * type.attackMultiplier + type.baseAttack)
+                                * type.damagePotential;
                 damage += modifierSum(data, Effect.ATTACK_DAMAGE);
 
-                float attackSpeed = type.baseSpeed;
-                if (handle.isPresent() && handle.get().hasTrait(ModTraits.FEATHERWEIGHT)) {
-                        attackSpeed += 0.15F;
-                }
+                float attackSpeed = type.attackSpeed;
                 attackSpeed += modifierSum(data, Effect.ATTACK_SPEED);
 
                 // ---- enchantability ----
                 int enchantability = head.enchantmentValue();
-                if (binding.isPresent() && binding.get().hasTrait(ModTraits.GILDED)) {
-                        enchantability += 3;
-                }
 
                 // ---- repair items ----
                 List<Holder<Item>> repairItems = new ArrayList<>();
-                BuiltInRegistries.ITEM.getOrThrow(head.repairTag()).forEach(repairItems::add);
-                boolean rooted = allParts.stream().anyMatch(m -> m.hasTrait(ModTraits.ROOTED));
-                if (rooted) {
-                        repairItems.add(BuiltInRegistries.ITEM.wrapAsHolder(Items.STICK));
+                if (head.repairTag() != null) {
+                        BuiltInRegistries.ITEM.getOrThrow(head.repairTag()).forEach(repairItems::add);
                 }
 
                 // ---- bake vanilla components ----
+                // The sword is a weapon, NOT a mining tool - its leaf/cobweb
+                // behaviour is fixed at vanilla speeds instead of scaling with
+                // the head's mining speed.
+                int damagePerBlock = 1;
+                boolean canDestroyInCreative = true;
                 List<Tool.Rule> rules = new ArrayList<>();
-                rules.add(Tool.Rule.deniesDrops(BuiltInRegistries.BLOCK.getOrThrow(tier.incorrectBlocksForDrops)));
-                if (type.mineableTag != null) {
-                        rules.add(Tool.Rule.minesAndDrops(BuiltInRegistries.BLOCK.getOrThrow(type.mineableTag), speed));
-                } else if (type == ModularToolType.SWORD) {
-                        rules.add(Tool.Rule.minesAndDrops(BuiltInRegistries.BLOCK.getOrThrow(BlockTags.SWORD_EFFICIENT), speed));
-                } else if (type == ModularToolType.MACE) {
+                if (type == ModularToolType.SWORD) {
+                        rules.add(Tool.Rule.minesAndDrops(
+                                        HolderSet.direct(Blocks.COBWEB.builtInRegistryHolder()), 15.0F));
                         rules.add(Tool.Rule.overrideSpeed(BuiltInRegistries.BLOCK.getOrThrow(BlockTags.SWORD_INSTANTLY_MINES),
-                                        speed));
+                                        Float.MAX_VALUE));
+                        rules.add(Tool.Rule.overrideSpeed(BuiltInRegistries.BLOCK.getOrThrow(BlockTags.SWORD_EFFICIENT),
+                                        1.5F));
+                        damagePerBlock = 2;
+                        canDestroyInCreative = false;
+                } else {
+                        // every non-sword tool harvests by its head tier and mines
+                        // its class blocks at the head speed x the tool's mining
+                        // multiplier
+                        rules.add(Tool.Rule.deniesDrops(BuiltInRegistries.BLOCK.getOrThrow(tier.incorrectBlocksForDrops)));
+                        if (type.mineableTag != null) {
+                                rules.add(Tool.Rule.minesAndDrops(BuiltInRegistries.BLOCK.getOrThrow(type.mineableTag),
+                                                speed));
+                        }
                 }
-                stack.set(DataComponents.TOOL, new Tool(rules, 1.0F, 1, true));
-                stack.set(DataComponents.MAX_DAMAGE, durability);
+                stack.set(DataComponents.TOOL, new Tool(rules, 1.0F, damagePerBlock, canDestroyInCreative));
+                stack.set(DataComponents.MAX_DAMAGE, finalDurability);
+                // 26.3 requires the DAMAGE component to be present for
+                // isDamageableItem() to be true (vanilla Properties#durability sets
+                // MAX_DAMAGE + DAMAGE=0 together); without it tools never lose durability
+                stack.set(DataComponents.DAMAGE,
+                                Math.min(stack.getOrDefault(DataComponents.DAMAGE, 0), Math.max(0, finalDurability - 1)));
                 stack.set(DataComponents.ENCHANTABLE, new Enchantable(Math.max(0, enchantability)));
                 stack.set(DataComponents.REPAIRABLE, new Repairable(HolderSet.direct(repairItems)));
                 stack.set(DataComponents.WEAPON, new Weapon(type.weaponDamagePerAttack, type.disableBlockingForSeconds));
-                stack.set(DataComponents.ATTRIBUTE_MODIFIERS, toolAttributes(type, damage, attackSpeed, bouncyLvl));
+                stack.set(DataComponents.ATTRIBUTE_MODIFIERS,
+                                toolAttributes(type, damage, attackSpeed - 4.0F, bouncyLvl));
 
                 if (type == ModularToolType.SPEAR) {
                         stack.set(DataComponents.KINETIC_WEAPON, spearKineticWeapon(head));
                         stack.set(DataComponents.PIERCING_WEAPON, new PiercingWeapon(true, false,
-                                        Optional.of(SoundEvents.SPEAR_ATTACK), Optional.of(SoundEvents.SPEAR_HIT)));
+                                        java.util.Optional.of(SoundEvents.SPEAR_ATTACK),
+                                        java.util.Optional.of(SoundEvents.SPEAR_HIT)));
                         com.modulardreams.registry.ModRegistryAccess.get().ifPresent(access -> stack.set(DataComponents.DAMAGE_TYPE,
-						access.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.SPEAR)));
+                                                access.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.SPEAR)));
                         stack.set(DataComponents.ATTACK_RANGE, new AttackRange(2.0F, 4.5F, 2.0F, 6.5F, 0.125F, 0.5F));
                         stack.set(DataComponents.MINIMUM_ATTACK_CHARGE, 1.0F);
                         stack.set(DataComponents.ATTACK_ANIMATION, new SwingAnimation(SwingAnimationType.STAB, 13));
@@ -216,11 +231,14 @@ public final class StatsEngine {
 
                 applyFireResistant(stack, allParts, netherited);
                 applyEnchantModifiers(stack, data, type);
-                applyCosmetics(stack, head, binding);
+                applyCosmetics(stack, head);
 
                 stack.set(DataComponents.ITEM_NAME, Component.translatable(
                                 "item.modular_dreams.modular_" + type.id + ".named", Component.translatable(head.nameKey())));
-                stack.set(DataComponents.ITEM_MODEL, ModularDreams.id("modular_" + type.id + "_" + head.id()));
+                // one dynamic definition per tool type: the "modular_dreams:modular_tool"
+                // item model stacks the grayscale part textures, tinted by each part's
+                // own material color (Tinkers'-style layered rendering)
+                stack.set(DataComponents.ITEM_MODEL, ModularDreams.id("modular_" + type.id));
         }
 
         private static KineticWeapon spearKineticWeapon(ModularMaterial head) {
@@ -233,8 +251,8 @@ public final class StatsEngine {
                                 KineticWeapon.Condition.ofRelativeSpeed(300, 4.6F),
                                 0.38F,
                                 0.7F,
-                                Optional.of(wooden ? SoundEvents.SPEAR_WOOD_USE : SoundEvents.SPEAR_USE),
-                                Optional.of(wooden ? SoundEvents.SPEAR_WOOD_HIT : SoundEvents.SPEAR_HIT));
+                                java.util.Optional.of(wooden ? SoundEvents.SPEAR_WOOD_USE : SoundEvents.SPEAR_USE),
+                                java.util.Optional.of(wooden ? SoundEvents.SPEAR_WOOD_HIT : SoundEvents.SPEAR_HIT));
         }
 
         private static ItemAttributeModifiers toolAttributes(ModularToolType type, float damage, float attackSpeed,
@@ -258,91 +276,10 @@ public final class StatsEngine {
                 return builder.build();
         }
 
-        // ------------------------------------------------------------------ armor baking
-
-        private static void bakeArmor(ItemStack stack, ModularData data, ModularArmorType type) {
-                ModularMaterial plate = material(data, PartType.PLATE);
-                Optional<ModularMaterial> lining = materialOpt(data, PartType.LINING);
-                ModularMaterial.Plate plateStats = plate.plateOpt().orElseThrow();
-
-                // ---- durability ----
-                int durability = type.armorType.getDurability(plateStats.durabilityMultiplier());
-                float liningBonus = lining.flatMap(ModularMaterial::liningOpt)
-                                .map(ModularMaterial.Lining::durabilityBonus).orElse(0.0F);
-                durability = Math.round(durability * (1.0F + liningBonus));
-                float durabilityPct = modifierSum(data, Effect.DURABILITY_PCT);
-                int durabilityFlat = Math.round(modifierSum(data, Effect.DURABILITY_FLAT));
-                durability = Math.round(durability * (1.0F + durabilityPct)) + durabilityFlat;
-                durability = Math.max(1, durability);
-
-                // ---- defense ----
-                int defense = plateStats.defense().getOrDefault(type.armorType, 0);
-                float toughness = plateStats.toughness();
-                float kbResistance = plateStats.knockbackResistance();
-                kbResistance += modifierSum(data, Effect.KB_RESISTANCE);
-
-                // ---- enchantability ----
-                int enchantability = plateStats.enchantmentValue();
-                enchantability += lining.flatMap(ModularMaterial::liningOpt)
-                                .map(ModularMaterial.Lining::enchantmentBonus).orElse(0);
-
-                // ---- attribute modifiers ----
-                EquipmentSlotGroup group = EquipmentSlotGroup.bySlot(type.slot);
-                ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
-                if (defense != 0) {
-                        builder.add(Attributes.ARMOR, new AttributeModifier(ModularDreams.id("armor"), defense,
-                                        AttributeModifier.Operation.ADD_VALUE), group);
-                }
-                if (toughness != 0) {
-                        builder.add(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(ModularDreams.id("armor_toughness"),
-                                        toughness, AttributeModifier.Operation.ADD_VALUE), group);
-                }
-                if (kbResistance != 0) {
-                        builder.add(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(ModularDreams.id("armor_kb"),
-                                        kbResistance, AttributeModifier.Operation.ADD_VALUE), group);
-                }
-                // trait attributes (turtle plate water affinity)
-                if (plate.hasTrait(ModTraits.AQUATIC)) {
-                        builder.add(Attributes.WATER_MOVEMENT_EFFICIENCY, new AttributeModifier(
-                                        ModularDreams.id("trait_aquatic"), 0.2, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL), group);
-                }
-                // lining attribute bonuses
-                lining.flatMap(ModularMaterial::liningOpt).ifPresent(l -> {
-                        List<ModularMaterial.AttrBonus> attrs = l.attributes();
-                        for (int i = 0; i < attrs.size(); i++) {
-                                ModularMaterial.AttrBonus bonus = attrs.get(i);
-                                builder.add(bonus.attribute(), new AttributeModifier(
-                                                ModularDreams.id("lining_" + i), bonus.amount(), bonus.operation()), group);
-                        }
-                });
-                // armor modifier attribute bonuses
-                addModifierAttributes(data, builder, group);
-                stack.set(DataComponents.ATTRIBUTE_MODIFIERS, builder.build());
-
-                // ---- equippable (per instance: vanilla armor visuals of the plate material) ----
-                stack.set(DataComponents.EQUIPPABLE, Equippable.builder(type.slot)
-                                .setEquipSound(plateStats.equipSound())
-                                .setAsset(plateStats.asset())
-                                .setDamageOnHurt(true)
-                                .build());
-
-                stack.set(DataComponents.MAX_DAMAGE, durability);
-                stack.set(DataComponents.ENCHANTABLE, new Enchantable(Math.max(0, enchantability)));
-                stack.set(DataComponents.REPAIRABLE, new Repairable(BuiltInRegistries.ITEM.getOrThrow(plateStats.repairTag())));
-
-                applyFireResistant(stack, List.of(plate), data.levelOf("netherited") > 0);
-                applyEnchantModifiers(stack, data, null);
-                applyCosmetics(stack, plate, Optional.empty());
-
-                stack.set(DataComponents.ITEM_NAME, Component.translatable(
-                                "item.modular_dreams.modular_" + type.id + ".named", Component.translatable(plate.nameKey())));
-                stack.set(DataComponents.ITEM_MODEL, ModularDreams.id("modular_" + type.id + "_" + plate.id()));
-        }
-
         // ------------------------------------------------------------------ shared helpers
 
         private static void applyFireResistant(ItemStack stack, List<ModularMaterial> parts, boolean netherited) {
-                boolean fireproof = netherited || parts.stream().anyMatch(m -> m.fireResistant());
+                boolean fireproof = netherited || parts.stream().anyMatch(ModularMaterial::fireResistant);
                 if (fireproof) {
                         com.modulardreams.registry.ModRegistryAccess.get().ifPresent(access -> stack.set(
                                         DataComponents.DAMAGE_RESISTANT, new DamageResistant(access
@@ -370,8 +307,9 @@ public final class StatsEngine {
                                 actualKey = Enchantments.LOOTING;
                         }
                         Holder<Enchantment> holder = com.modulardreams.registry.ModRegistryAccess.get()
-					.orElseThrow(() -> new IllegalStateException("No registry access")).lookupOrThrow(Registries.ENCHANTMENT)
-					.getOrThrow(actualKey);
+                                        .orElseThrow(() -> new IllegalStateException("No registry access"))
+                                        .lookupOrThrow(Registries.ENCHANTMENT)
+                                        .getOrThrow(actualKey);
                         ench.set(holder, entry.level());
                         changed = true;
                 }
@@ -381,18 +319,30 @@ public final class StatsEngine {
         }
 
         private static boolean isWeapon(ModularToolType type) {
-                return type == ModularToolType.SWORD || type == ModularToolType.MACE || type == ModularToolType.SPEAR
+                return type == ModularToolType.SWORD || type == ModularToolType.SPEAR
                                 || type == ModularToolType.AXE;
         }
 
-        private static void applyCosmetics(ItemStack stack, ModularMaterial head, Optional<ModularMaterial> binding) {
-                // Diamond bindings softly glint (PRECIOUS)
-                if (binding.isPresent() && binding.get().hasTrait(ModTraits.PRECIOUS)) {
-                        stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+        private static void applyCosmetics(ItemStack stack, ModularMaterial head) {
+                // reserved for trait-driven cosmetics (dormant with the EMPTY placeholder)
+        }
+
+        /**
+         * Tools assembled before the DAMAGE-component fix lack the DAMAGE
+         * component, which 26.3 requires for {@code isDamageableItem()}; call
+         * this from custom damage handlers (runs inside {@code hurtAndBreak},
+         * before that check) so legacy stacks start taking damage again.
+         */
+        public static void ensureDamageComponent(ItemStack stack) {
+                if (stack.get(DataComponents.MAX_DAMAGE) != null && !stack.has(DataComponents.DAMAGE)) {
+                        stack.set(DataComponents.DAMAGE, 0);
                 }
         }
 
-        /** @return total durability damage reduction from the DENSE trait and the reinforced modifier (0..1). */
+        /**
+         * @return total durability damage reduction from the DENSE trait and the
+         *         reinforced modifier (0..1). DENSE is dormant with the EMPTY placeholder.
+         */
         public static float durabilityDamageReduction(ItemStack stack, ModularData data) {
                 float reduction = 0.0F;
                 for (var part : data.parts()) {
@@ -443,38 +393,9 @@ public final class StatsEngine {
                 return sum;
         }
 
-        private static void addModifierAttributes(ModularData data, ItemAttributeModifiers.Builder builder,
-                        EquipmentSlotGroup group) {
-                for (var entry : data.modifiers()) {
-                        Optional<Modifier> modifier = Modifier.byId(entry.id());
-                        if (modifier.isEmpty()) {
-                                continue;
-                        }
-                        float amount = modifier.get().magnitude() * entry.level();
-                        Identifier modifierId = ModularDreams.id("modifier_" + modifier.get().id());
-                        switch (modifier.get().effect()) {
-                                case FALL_DAMAGE_MULT -> builder.add(Attributes.FALL_DAMAGE_MULTIPLIER,
-                                                new AttributeModifier(modifierId, amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL),
-                                                group);
-                                case WATER_SPEED -> builder.add(Attributes.WATER_MOVEMENT_EFFICIENCY,
-                                                new AttributeModifier(modifierId, amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL),
-                                                group);
-                                case SNEAK_SPEED -> builder.add(Attributes.SNEAKING_SPEED,
-                                                new AttributeModifier(modifierId, amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL),
-                                                group);
-                                default -> {
-                                }
-                        }
-                }
-        }
-
         private static ModularMaterial material(ModularData data, PartType part) {
                 return ModMaterials.getOrThrow(data.materialOf(part.id).orElseThrow(
                                 () -> new IllegalStateException("Assembled item is missing part " + part.id)));
-        }
-
-        private static Optional<ModularMaterial> materialOpt(ModularData data, PartType part) {
-                return data.materialOf(part.id).flatMap(ModMaterials::byId);
         }
 
         // ------------------------------------------------------------------ guide book stats
@@ -482,56 +403,26 @@ public final class StatsEngine {
         public static ToolStats toolStats(ModularData data) {
                 ModularToolType type = ModularToolType.byId(data.equipmentType()).orElseThrow();
                 ModularMaterial head = material(data, type.headPart());
-                Optional<ModularMaterial> handle = materialOpt(data, PartType.HANDLE);
-                Optional<ModularMaterial> binding = type.bindingPart().flatMap(p -> materialOpt(data, p));
+                ModularMaterial handle = material(data, type.handlePart());
+                ModularMaterial binding = material(data, type.bindingPart());
 
-                float handleMult = handle.map(ModularMaterial::handleDurability).orElse(0.0F);
-                float bindingMult = binding.map(ModularMaterial::bindingDurability).orElse(0.0F);
-                int durability = Math.round(head.durability() * (1.0F + handleMult + bindingMult));
-                durability = Math.round(durability * (1.0F + modifierSum(data, Effect.DURABILITY_PCT)))
+                float durability = (head.durability() + binding.extraDurabilityBonus()) * handle.handleModifier()
+                                + handle.handleDurabilityBonus();
+                durability *= type.durabilityMultiplier;
+                int bakedDurability = Math.round(durability);
+                int finalDurability = Math.round(bakedDurability * (1.0F + modifierSum(data, Effect.DURABILITY_PCT)))
                                 + Math.round(modifierSum(data, Effect.DURABILITY_FLAT));
 
-                float speed = head.speed() * (1.0F + modifierSum(data, Effect.MINING_SPEED_PCT));
-                if (binding.isPresent() && binding.get().hasTrait(ModTraits.RESONANT)) {
-                        speed *= 1.10F;
-                }
-                float damage = type.baseDamage + head.attackDamageBonus() + modifierSum(data, Effect.ATTACK_DAMAGE);
-                if (head.hasTrait(ModTraits.SPIKY)) {
-                        damage += 0.5F;
-                }
-                float attackSpeed = type.baseSpeed + modifierSum(data, Effect.ATTACK_SPEED);
-                if (handle.isPresent() && handle.get().hasTrait(ModTraits.FEATHERWEIGHT)) {
-                        attackSpeed += 0.15F;
-                }
+                float speed = head.speed() * type.miningSpeedMultiplier
+                                * (1.0F + modifierSum(data, Effect.MINING_SPEED_PCT));
+                float damage = (head.attackDamageBonus() * type.attackMultiplier + type.baseAttack)
+                                * type.damagePotential + modifierSum(data, Effect.ATTACK_DAMAGE);
+                float attackSpeed = type.attackSpeed + modifierSum(data, Effect.ATTACK_SPEED);
                 int ench = head.enchantmentValue();
-                if (binding.isPresent() && binding.get().hasTrait(ModTraits.GILDED)) {
-                        ench += 3;
-                }
                 MaterialTier tier = head.tier();
                 if (data.levelOf("netherited") > 0) {
                         tier = tier.max(MaterialTier.NETHERITE);
                 }
-                return new ToolStats(durability, speed, tier, damage, attackSpeed, ench);
-        }
-
-        public static ArmorStats armorStats(ModularData data) {
-                ModularArmorType type = ModularArmorType.byId(data.equipmentType());
-                ModularMaterial plate = material(data, PartType.PLATE);
-                ModularMaterial.Plate plateStats = plate.plateOpt().orElseThrow();
-                Optional<ModularMaterial> lining = materialOpt(data, PartType.LINING);
-
-                int durability = type.armorType.getDurability(plateStats.durabilityMultiplier());
-                float liningBonus = lining.flatMap(ModularMaterial::liningOpt)
-                                .map(ModularMaterial.Lining::durabilityBonus).orElse(0.0F);
-                durability = Math.round(durability * (1.0F + liningBonus));
-                durability = Math.round(durability * (1.0F + modifierSum(data, Effect.DURABILITY_PCT)))
-                                + Math.round(modifierSum(data, Effect.DURABILITY_FLAT));
-
-                int defense = plateStats.defense().getOrDefault(type.armorType, 0);
-                if (lining.isPresent() && lining.get().hasTrait(ModTraits.SOFT)) {
-                        defense += 1;
-                }
-                return new ArmorStats(durability, defense, plateStats.toughness(), plateStats.knockbackResistance(),
-                                plateStats.enchantmentValue());
+                return new ToolStats(finalDurability, speed, tier, damage, attackSpeed, ench);
         }
 }

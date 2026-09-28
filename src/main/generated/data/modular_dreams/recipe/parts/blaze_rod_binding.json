@@ -1,0 +1,8 @@
+{
+  "type": "modular_dreams:part_builder",
+  "cost": 2,
+  "ingredient": "minecraft:blaze_rod",
+  "result": {
+    "id": "modular_dreams:blaze_rod_binding"
+  }
+}

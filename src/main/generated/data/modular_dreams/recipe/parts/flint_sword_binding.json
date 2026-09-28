@@ -1,0 +1,8 @@
+{
+  "type": "modular_dreams:part_builder",
+  "cost": 2,
+  "ingredient": "minecraft:flint",
+  "result": {
+    "id": "modular_dreams:flint_sword_binding"
+  }
+}

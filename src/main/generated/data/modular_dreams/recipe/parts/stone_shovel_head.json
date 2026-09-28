@@ -1,0 +1,7 @@
+{
+  "type": "modular_dreams:part_builder",
+  "ingredient": "#minecraft:stone_tool_materials",
+  "result": {
+    "id": "modular_dreams:stone_shovel_head"
+  }
+}

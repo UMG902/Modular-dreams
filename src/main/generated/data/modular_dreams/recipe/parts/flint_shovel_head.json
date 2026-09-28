@@ -1,0 +1,7 @@
+{
+  "type": "modular_dreams:part_builder",
+  "ingredient": "minecraft:flint",
+  "result": {
+    "id": "modular_dreams:flint_shovel_head"
+  }
+}

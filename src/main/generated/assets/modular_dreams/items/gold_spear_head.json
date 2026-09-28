@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "modular_dreams:gold_spear_head"
+    "model": "modular_dreams:spear_head",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -401845
+      }
+    ]
   }
 }

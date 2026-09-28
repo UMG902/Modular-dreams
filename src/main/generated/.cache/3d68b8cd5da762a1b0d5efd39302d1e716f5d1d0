@@ -1,22 +1,16 @@
 // 26.3	-999999999-01-01T00:00:00	Modular Dreams/Modular Dreams Tags
 d6ea57dcd513bb08aec0de992c52ff6d4a42573e data/minecraft/tags/item/axes.json
-2d1405dd4ad307acde67236e14a30938a3d41974 data/minecraft/tags/item/enchantable/armor.json
-ffd872122078d9e4b30aea501c2850127103c29a data/minecraft/tags/item/enchantable/chest_armor.json
-7af4042fb2015f22861e5a51a59630b79abff500 data/minecraft/tags/item/enchantable/durability.json
-2d1405dd4ad307acde67236e14a30938a3d41974 data/minecraft/tags/item/enchantable/equippable.json
-87c4dc1647cc4abc364e97da90e2d839637df232 data/minecraft/tags/item/enchantable/fire_aspect.json
-c918a7ea10cf37a671888ac4b3207109140c5437 data/minecraft/tags/item/enchantable/foot_armor.json
-d9535eb5a8be31b2466a915e26fffa04931a9b1d data/minecraft/tags/item/enchantable/head_armor.json
-13278b33b85d80996736b9c5f68163bbd103fc91 data/minecraft/tags/item/enchantable/leg_armor.json
-91dee8984c2a603a6810e1db6d1b7439574cee05 data/minecraft/tags/item/enchantable/mace.json
+9e78f9c68efba65ee32091afb8bb3fcd94e690bf data/minecraft/tags/item/enchantable/durability.json
+aea8661d78a1e461b33c33111d7ec25d5c3b409b data/minecraft/tags/item/enchantable/fire_aspect.json
 cd5052a2e162db176c35a861212fc41bff9f574e data/minecraft/tags/item/enchantable/mining.json
 6d79785f99356f3fecd9e72e7e750db7927bda8f data/minecraft/tags/item/enchantable/mining_loot.json
 13695cbc485b0066e6d835c71c698922c03b65ac data/minecraft/tags/item/enchantable/sharp_weapon.json
 e303cd442d9e2ab9f1a2667c3f9a34c8b2c4d07e data/minecraft/tags/item/enchantable/sweeping.json
-e4c7ed93bdc5916f1d2c66e062333295dcb3c2fe data/minecraft/tags/item/enchantable/weapon.json
+13695cbc485b0066e6d835c71c698922c03b65ac data/minecraft/tags/item/enchantable/weapon.json
 b304eeda412dbdd3511caacd4b89a003bacb4806 data/minecraft/tags/item/hoes.json
 731de6339050aa8f904f1fe9d1fab072f91108ba data/minecraft/tags/item/pickaxes.json
 9235e7af3c9b2331e068f05f0ab7f30d850b7cde data/minecraft/tags/item/shovels.json
 4e0c4bf724b2c0eb43c4bbba7f3a92eb4d1fad4d data/minecraft/tags/item/spears.json
 d51c7ae6e5d30bb3f99b777c870b166295f25f72 data/minecraft/tags/item/swords.json
-2d1405dd4ad307acde67236e14a30938a3d41974 data/minecraft/tags/item/trimmable_armor.json
+6a0497389cf0eaf0877b2730c4647578ec359244 data/modular_dreams/tags/item/repairs_bone_tools.json
+4333e5b0d3c082c5e91baec1955d1a9d418dc318 data/modular_dreams/tags/item/repairs_flint_tools.json

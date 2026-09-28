@@ -7,7 +7,6 @@ import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
-import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.Identifier;
@@ -16,105 +15,137 @@ import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 
 import com.modulardreams.ModularDreams;
+import com.modulardreams.block.ModBlocks;
 import com.modulardreams.equipment.ModItems;
-import com.modulardreams.equipment.ModularArmorType;
 import com.modulardreams.equipment.ModularToolType;
-import com.modulardreams.equipment.ModPartItems;
-import com.modulardreams.material.ModMaterials;
-import com.modulardreams.material.ModularMaterial;
 import com.modulardreams.part.PartType;
 
 /**
- * Generates all item models and client item definitions.
+ * Generates block models and the base item models of the overhaul build.
  *
- * - Part items: simple flat models with their own texture.
- * - Modular tools: two-layer models (neutral base + colored head overlay);
- *   one model per head material, selected at runtime via the ITEM_MODEL
- *   component that StatsEngine bakes onto every assembled item.
- * - Modular armor: same trick with plate overlays (on-body rendering reuses
- *   vanilla equipment assets).
+ * - One FLAT_ITEM model per part shape (the shared grayscale texture).
+ * - Tool fallback models (grayscale head silhouette) for unassembled stacks.
+ * - Block models for the stations, the clay mold and the melting upgrade.
+ * - Mold / guide book item models.
  */
 public class ModModelProvider extends FabricModelProvider {
 
-	protected ModModelProvider(FabricPackOutput output) {
-		super(output);
-	}
+        protected ModModelProvider(FabricPackOutput output) {
+                super(output);
+        }
 
-	@Override
-	public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
-		// no blocks in this mod
-	}
+        @Override
+        public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
+                registerStation(blockStateModelGenerator, ModBlocks.PART_BUILDER, "part_builder");
+                registerStation(blockStateModelGenerator, ModBlocks.ASSEMBLY_TABLE, "assembly_table");
+                registerCubeBlock(blockStateModelGenerator, ModBlocks.MELTING_UPGRADE, "melting_upgrade");
+                // NOTE: the clay and terracotta molds are NOT generated here -
+                // they use hand-written flat cutting-board models (one pixel tall)
+                // in src/main/resources, because vanilla templates cannot emit
+                // custom element models.
+        }
 
-	@Override
-	public void generateItemModels(ItemModelGenerators generators) {
-		var modelOutput = generators.modelOutput;
-		var itemModelOutput = generators.itemModelOutput;
+        /** cube_bottom_top blockstate + block item model for one station block. */
+        private void registerStation(BlockModelGenerators generator, net.minecraft.world.level.block.Block block,
+                        String name) {
+                var mapping = new TextureMapping()
+                                .put(net.minecraft.client.data.models.model.TextureSlot.TOP,
+                                                blockTexture(name + "_top"))
+                                .put(net.minecraft.client.data.models.model.TextureSlot.SIDE,
+                                                blockTexture(name + "_side"))
+                                .put(net.minecraft.client.data.models.model.TextureSlot.BOTTOM,
+                                                blockTexture(name + "_bottom"));
+                Identifier modelId = ModelTemplates.CUBE_BOTTOM_TOP.create(ModularDreams.id("block/" + name),
+                                mapping, generator.modelOutput);
+                generator.blockStateOutput.accept(
+                                generator.createSimpleBlock(block, generator.plainVariant(modelId)));
+                // Point the client item definition straight at the block model so the block
+                // renders as a proper 3D block in the inventory (vanilla crafting-table style).
+                generator.registerSimpleItemModel(block, modelId);
+        }
 
-		// ---- part items ----
-		for (PartType part : PartType.values()) {
-			for (ModularMaterial material : part.allowedMaterials()) {
-				String name = material.id() + "_" + part.id;
-				Identifier modelId = ModelTemplates.FLAT_ITEM.create(
-						ModularDreams.id(name),
-						TextureMapping.layer0(texture(name)),
-						modelOutput);
-				itemModelOutput.accept(ModPartItems.get(part, material), ItemModelUtils.plainModel(modelId));
-			}
-		}
+        /** cube_all blockstate + block item model (mold, melting upgrade). */
+        private void registerCubeBlock(BlockModelGenerators generator, net.minecraft.world.level.block.Block block,
+                        String name) {
+                Identifier modelId = ModelTemplates.CUBE_ALL.create(ModularDreams.id("block/" + name),
+                                new TextureMapping().put(net.minecraft.client.data.models.model.TextureSlot.ALL,
+                                                blockTexture(name)),
+                                generator.modelOutput);
+                generator.blockStateOutput.accept(
+                                generator.createSimpleBlock(block, generator.plainVariant(modelId)));
+                generator.registerSimpleItemModel(block, modelId);
+        }
 
-		// ---- modular tools (2 layers: base + head overlay per material) ----
-		for (ModularToolType tool : ModularToolType.values()) {
-			String itemName = "modular_" + tool.id;
-			// default (unassembled) model: base layer only
-			Identifier baseModelId = ModelTemplates.FLAT_ITEM.create(
-					ModularDreams.id(itemName),
-					TextureMapping.layer0(texture(itemName + "_base")),
-					modelOutput);
-			itemModelOutput.accept(item(itemName), ItemModelUtils.plainModel(baseModelId));
+        @Override
+        public void generateItemModels(ItemModelGenerators generators) {
+                var modelOutput = generators.modelOutput;
+                var itemModelOutput = generators.itemModelOutput;
 
-			for (ModularMaterial material : ModMaterials.toolMaterials()) {
-				Identifier layeredId = ModelTemplates.TWO_LAYERED_ITEM.create(
-						ModularDreams.id(itemName + "_" + material.id()),
-						TextureMapping.layered(texture(itemName + "_base"), texture(itemName + "_overlay_" + material.id())),
-						modelOutput);
-			}
-		}
+                // ---- one grayscale model per part shape (shared by every material) ----
+                for (PartType part : PartType.values()) {
+                        ModelTemplates.FLAT_ITEM.create(
+                                        ModularDreams.id(part.id),
+                                        TextureMapping.layer0(texture(part.id)),
+                                        modelOutput);
+                }
 
-		// ---- modular armor (2 layers: lining base + plate overlay per material) ----
-		for (ModularArmorType armor : ModularArmorType.values()) {
-			String itemName = "modular_" + armor.id;
-			Identifier baseModelId = ModelTemplates.FLAT_ITEM.create(
-					ModularDreams.id(itemName),
-					TextureMapping.layer0(texture(itemName + "_base")),
-					modelOutput);
-			itemModelOutput.accept(item(itemName), ItemModelUtils.plainModel(baseModelId));
+                // ---- render-only part shapes ----
+                // Assembled tools use the UNIVERSAL handle and UNIVERSAL
+                // binding parts, but their item definitions render those
+                // layers with these dedicated per-tool models (Tinkers'-style
+                // shapes). No part items exist for them.
+                for (String renderOnly : new String[] {
+                                "sword_handle", "spear_handle",
+                                "pickaxe_binding", "axe_binding", "shovel_binding", "hoe_binding" }) {
+                        ModelTemplates.FLAT_ITEM.create(
+                                        ModularDreams.id(renderOnly),
+                                        TextureMapping.layer0(texture(renderOnly)),
+                                        modelOutput);
+                }
 
-			for (ModularMaterial material : ModMaterials.plateMaterials()) {
-				Identifier layeredId = ModelTemplates.TWO_LAYERED_ITEM.create(
-						ModularDreams.id(itemName + "_" + material.id()),
-						TextureMapping.layered(texture(itemName + "_base"), texture(itemName + "_overlay_" + material.id())),
-						modelOutput);
-			}
-		}
+                // ---- modular tools ----
+                // Only the neutral fallback MODEL is generated here (the definition that
+                // references it comes from ModItemDefinitionProvider: the layered
+                // "modular_dreams:modular_tool" type). Writing the item definition here
+                // as well would silently overwrite the layered one.
+                for (ModularToolType tool : ModularToolType.values()) {
+                        String itemName = "modular_" + tool.id;
+                        ModelTemplates.FLAT_ITEM.create(
+                                        ModularDreams.id(itemName),
+                                        TextureMapping.layer0(texture(tool.headPart().id)),
+                                        modelOutput);
+                }
 
-		// ---- guide book ----
-		Identifier guideModelId = ModelTemplates.FLAT_ITEM.create(
-				ModularDreams.id("modular_guidebook"),
-				TextureMapping.layer0(texture("modular_guidebook")),
-				modelOutput);
-		itemModelOutput.accept(item("modular_guidebook"), ItemModelUtils.plainModel(guideModelId));
-	}
+                // ---- molds ----
+                // (the clay and terracotta mold block item definitions are hand-written
+                // in src/main/resources too, pointing at the flat block models)
 
-	private Item item(String name) {
-		return ModItems.byName(name).orElseThrow(() -> new IllegalStateException("missing item " + name));
-	}
+                // ---- guide book ----
+                Identifier guideModelId = ModelTemplates.FLAT_ITEM.create(
+                                ModularDreams.id("modular_guidebook"),
+                                TextureMapping.layer0(texture("modular_guidebook")),
+                                modelOutput);
+                itemModelOutput.accept(item("modular_guidebook"), ItemModelUtils.plainModel(guideModelId));
+        }
 
-	private Material texture(String name) {
-		return new Material(ModularDreams.id("item/" + name));
-	}
+        private Item item(String name) {
+                return ModItems.byName(name).orElseThrow(() -> new IllegalStateException("missing item " + name));
+        }
 
-	@Override
-	public String getName() {
-		return "Modular Dreams Models";
-	}
+        private Item blockItem(net.minecraft.world.level.block.Block block) {
+                return block.asItem();
+        }
+
+        private Material texture(String name) {
+                return new Material(ModularDreams.id("item/" + name));
+        }
+
+        private Material blockTexture(String name) {
+                return new Material(ModularDreams.id("block/" + name));
+        }
+
+        @Override
+        public String getName() {
+                return "Modular Dreams Models";
+        }
 }

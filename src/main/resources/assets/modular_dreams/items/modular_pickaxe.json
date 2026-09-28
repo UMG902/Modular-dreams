@@ -1,0 +1,293 @@
+{
+ "model": {
+  "type": "modular_dreams:modular_tool",
+  "layers": [
+   {
+    "part": "handle",
+    "variants": {
+     "wood": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 8018486
+       }
+      ]
+     },
+     "stone": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 8355711
+       }
+      ]
+     },
+     "flint": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 4868690
+       }
+      ]
+     },
+     "bone": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 15329244
+       }
+      ]
+     },
+     "blaze_rod": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 16625711
+       }
+      ]
+     },
+     "breeze_rod": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 9418440
+       }
+      ]
+     },
+     "copper": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 15170646
+       }
+      ]
+     },
+     "iron": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 14211288
+       }
+      ]
+     },
+     "gold": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 16375371
+       }
+      ]
+     }
+    }
+   },
+   {
+    "part": "pickaxe_head",
+    "variants": {
+     "wood": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_head",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 8018486
+       }
+      ]
+     },
+     "stone": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_head",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 8355711
+       }
+      ]
+     },
+     "flint": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_head",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 4868690
+       }
+      ]
+     },
+     "bone": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_head",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 15329244
+       }
+      ]
+     },
+     "copper": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_head",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 15170646
+       }
+      ]
+     },
+     "iron": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_head",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 14211288
+       }
+      ]
+     },
+     "gold": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_head",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 16375371
+       }
+      ]
+     }
+    }
+   },
+   {
+    "part": "binding",
+    "variants": {
+     "wood": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 8018486
+       }
+      ]
+     },
+     "stone": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 8355711
+       }
+      ]
+     },
+     "flint": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 4868690
+       }
+      ]
+     },
+     "bone": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 15329244
+       }
+      ]
+     },
+     "copper": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 15170646
+       }
+      ]
+     },
+     "iron": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 14211288
+       }
+      ]
+     },
+     "gold": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 16375371
+       }
+      ]
+     },
+     "leather": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 10512447
+       }
+      ]
+     },
+     "vine": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 5012008
+       }
+      ]
+     },
+     "string": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 15131347
+       }
+      ]
+     },
+     "slime": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:pickaxe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 7324502
+       }
+      ]
+     }
+    }
+   }
+  ],
+  "fallback": "modular_dreams:modular_pickaxe"
+ }
+}

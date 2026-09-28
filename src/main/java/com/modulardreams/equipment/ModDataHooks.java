@@ -48,6 +48,26 @@ public final class ModDataHooks {
                                 .filter(d -> !d.equipmentType().equals("none"));
         }
 
+        /**
+         * Shows the durability of a damageable modular item as an explicit stat
+         * line (Tinkers-style), since vanilla only displays the durability bar
+         * once the item is actually damaged. Colors shift towards red as the
+         * item wears down.
+         */
+        public static void appendDurabilityTooltip(ItemStack stack, Consumer<Component> tooltip) {
+                int max = stack.getMaxDamage();
+                if (max <= 0) {
+                        return;
+                }
+                int current = Math.max(0, max - stack.getDamageValue());
+                ChatFormatting color = current >= max ? ChatFormatting.GRAY
+                                : current > max / 2 ? ChatFormatting.GREEN
+                                : current > max / 5 ? ChatFormatting.YELLOW
+                                : ChatFormatting.RED;
+                tooltip.accept(Component.translatable("tooltip.modular_dreams.durability", current, max)
+                                .withStyle(color));
+        }
+
         private static String romanOrLevel(int level) {
                 return "I".repeat(Math.max(0, Math.min(level, 5)));
         }

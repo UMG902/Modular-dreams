@@ -25,63 +25,92 @@ import java.util.List;
  */
 public class ModDataComponents {
 
-	/** One part of an assembled item: a part type id + a material id. */
-	public record PartData(String part, String material) {
-		public static final Codec<PartData> CODEC = RecordCodecBuilder.create(i -> i.group(
-				Codec.STRING.fieldOf("part").forGetter(PartData::part),
-				Codec.STRING.fieldOf("material").forGetter(PartData::material)
-		).apply(i, PartData::new));
-	}
+        /** One part of an assembled item: a part type id + a material id. */
+        public record PartData(String part, String material) {
+                public static final Codec<PartData> CODEC = RecordCodecBuilder.create(i -> i.group(
+                                Codec.STRING.fieldOf("part").forGetter(PartData::part),
+                                Codec.STRING.fieldOf("material").forGetter(PartData::material)
+                ).apply(i, PartData::new));
+        }
 
-	/** One applied modifier: its id and current level (1-based). */
-	public record ModifierEntry(String id, int level) {
-		public static final Codec<ModifierEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
-				Codec.STRING.fieldOf("id").forGetter(ModifierEntry::id),
-				Codec.INT.fieldOf("level").forGetter(ModifierEntry::level)
-		).apply(i, ModifierEntry::new));
-	}
+        /** One applied modifier: its id and current level (1-based). */
+        public record ModifierEntry(String id, int level) {
+                public static final Codec<ModifierEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
+                                Codec.STRING.fieldOf("id").forGetter(ModifierEntry::id),
+                                Codec.INT.fieldOf("level").forGetter(ModifierEntry::level)
+                ).apply(i, ModifierEntry::new));
+        }
 
-	/** The full modular definition of an assembled item. */
-	public record ModularData(String equipmentType, List<PartData> parts, List<ModifierEntry> modifiers) {
+        /** The full modular definition of an assembled item. */
+        public record ModularData(String equipmentType, List<PartData> parts, List<ModifierEntry> modifiers) {
 
-		public static final Codec<ModularData> CODEC = RecordCodecBuilder.create(i -> i.group(
-				Codec.STRING.fieldOf("equipment_type").forGetter(ModularData::equipmentType),
-				PartData.CODEC.listOf().fieldOf("parts").forGetter(ModularData::parts),
-				ModifierEntry.CODEC.listOf().optionalFieldOf("modifiers", List.of()).forGetter(ModularData::modifiers)
-		).apply(i, ModularData::new));
+                public static final Codec<ModularData> CODEC = RecordCodecBuilder.create(i -> i.group(
+                                Codec.STRING.fieldOf("equipment_type").forGetter(ModularData::equipmentType),
+                                PartData.CODEC.listOf().fieldOf("parts").forGetter(ModularData::parts),
+                                ModifierEntry.CODEC.listOf().optionalFieldOf("modifiers", List.of()).forGetter(ModularData::modifiers)
+                ).apply(i, ModularData::new));
 
-		public static final ModularData EMPTY = new ModularData("none", List.of(), List.of());
+                public static final ModularData EMPTY = new ModularData("none", List.of(), List.of());
 
-		public java.util.Optional<String> materialOf(String partType) {
-			return parts.stream().filter(p -> p.part().equals(partType))
-					.map(PartData::material).findFirst();
-		}
+                public java.util.Optional<String> materialOf(String partType) {
+                        return parts.stream().filter(p -> p.part().equals(partType))
+                                        .map(PartData::material).findFirst();
+                }
 
-		public int levelOf(String modifierId) {
-			return modifiers.stream().filter(m -> m.id().equals(modifierId))
-					.mapToInt(ModifierEntry::level).findFirst().orElse(0);
-		}
+                public int levelOf(String modifierId) {
+                        return modifiers.stream().filter(m -> m.id().equals(modifierId))
+                                        .mapToInt(ModifierEntry::level).findFirst().orElse(0);
+                }
 
-		public ModularData withModifier(String modifierId, int newLevel) {
-			List<ModifierEntry> updated = modifiers.stream()
-					.filter(m -> !m.id().equals(modifierId))
-					.collect(java.util.stream.Collectors.toList());
-			if (newLevel > 0) {
-				updated.add(new ModifierEntry(modifierId, newLevel));
-			}
-			return new ModularData(equipmentType, parts, List.copyOf(updated));
-		}
-	}
+                public ModularData withModifier(String modifierId, int newLevel) {
+                        List<ModifierEntry> updated = modifiers.stream()
+                                        .filter(m -> !m.id().equals(modifierId))
+                                        .collect(java.util.stream.Collectors.toList());
+                        if (newLevel > 0) {
+                                updated.add(new ModifierEntry(modifierId, newLevel));
+                        }
+                        return new ModularData(equipmentType, parts, List.copyOf(updated));
+                }
+        }
 
-	public static final ResourceKey<DataComponentType<?>> MODULAR_DATA_KEY = ResourceKey
-			.create(Registries.DATA_COMPONENT_TYPE, ModularDreams.id("modular_data"));
+        public static final ResourceKey<DataComponentType<?>> MODULAR_DATA_KEY = ResourceKey
+                        .create(Registries.DATA_COMPONENT_TYPE, ModularDreams.id("modular_data"));
 
-	public static final DataComponentType<ModularData> MODULAR_DATA = DataComponentType.<ModularData>builder()
-			.persistent(ModularData.CODEC)
-			.networkSynchronized(ByteBufCodecs.fromCodec(ModularData.CODEC))
-			.build();
+        public static final DataComponentType<ModularData> MODULAR_DATA = DataComponentType.<ModularData>builder()
+                        .persistent(ModularData.CODEC)
+                        .networkSynchronized(ByteBufCodecs.fromCodec(ModularData.CODEC))
+                        .build();
 
-	public static void initialize() {
-		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, MODULAR_DATA_KEY, MODULAR_DATA);
-	}
+        public static final ResourceKey<DataComponentType<?>> STATS_VERSION_KEY = ResourceKey
+                        .create(Registries.DATA_COMPONENT_TYPE, ModularDreams.id("stats_version"));
+
+        /**
+         * Version stamp of the stat formula that baked this stack. Items whose stamp
+         * differs from {@link com.modulardreams.stats.StatsEngine#STATS_VERSION} are
+         * silently re-baked from their modular data the first time they tick in an
+         * inventory, so tools built by older builds (or older formulas) self-heal.
+         */
+        public static final DataComponentType<Integer> STATS_VERSION = DataComponentType.<Integer>builder()
+                        .persistent(Codec.INT)
+                        .networkSynchronized(ByteBufCodecs.VAR_INT)
+                        .build();
+
+        /**
+         * The part shape a mold is shaped into (a {@link PartType} id, e.g.
+         * {@code pickaxe_head}). Present on shaped clay and terracotta molds;
+         * absent on fresh molds. Applies to the mold ITEM form and to the clay
+         * mold block entity's stored stack.
+         */
+        public static final DataComponentType<String> MOLD_PART = DataComponentType.<String>builder()
+                        .persistent(Codec.STRING)
+                        .networkSynchronized(ByteBufCodecs.STRING_UTF8)
+                        .build();
+
+        public static void initialize() {
+                Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, MODULAR_DATA_KEY, MODULAR_DATA);
+                Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, STATS_VERSION_KEY, STATS_VERSION);
+                Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+                                ResourceKey.create(Registries.DATA_COMPONENT_TYPE, ModularDreams.id("mold_part")),
+                                MOLD_PART);
+        }
 }

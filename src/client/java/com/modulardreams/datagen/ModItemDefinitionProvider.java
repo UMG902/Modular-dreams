@@ -12,42 +12,44 @@ import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricCodecDataProvider;
 
 import com.modulardreams.ModularDreams;
-import com.modulardreams.equipment.ModularArmorType;
-import com.modulardreams.equipment.ModularToolType;
-import com.modulardreams.material.ModMaterials;
 import com.modulardreams.material.ModularMaterial;
+import com.modulardreams.part.PartType;
 
 /**
- * Generates the per-material client item definitions under assets/modular_dreams/items/
- * (e.g. items/modular_pickaxe_iron.json) that the ITEM_MODEL component points to.
- * The definition and its 2-layer model share the same id by design.
+ * Generates the client item definitions under assets/modular_dreams/items/.
+ *
+ * - Tools: ONE definition per tool type using the custom
+ *   {@code modular_dreams:modular_tool} item model. Each layer (handle,
+ *   binding, head) carries one pre-tinted child model per material built from
+ *   the SHARED grayscale part texture + a constant material tint
+ *   (Tinkers'-style, no per-material textures).
+ * - Part items: grayscale part texture + constant material tint.
+ * - Molds / guide book: plain models.
  */
 public class ModItemDefinitionProvider extends FabricCodecDataProvider<ClientItem> {
 
-	protected ModItemDefinitionProvider(FabricPackOutput output,
-			CompletableFuture<HolderLookup.Provider> registriesFuture) {
-		super(output, registriesFuture, PackOutput.Target.RESOURCE_PACK, "items", ClientItem.CODEC);
-	}
+        protected ModItemDefinitionProvider(FabricPackOutput output,
+                        CompletableFuture<HolderLookup.Provider> registriesFuture) {
+                super(output, registriesFuture, PackOutput.Target.RESOURCE_PACK, "items", ClientItem.CODEC);
+        }
 
-	@Override
-	protected void configure(java.util.function.BiConsumer<Identifier, ClientItem> consumer,
-			HolderLookup.Provider provider) {
-		for (ModularToolType tool : ModularToolType.values()) {
-			for (ModularMaterial material : ModMaterials.toolMaterials()) {
-				Identifier id = ModularDreams.id("modular_" + tool.id + "_" + material.id());
-				consumer.accept(id, new ClientItem(ItemModelUtils.plainModel(id), ClientItem.Properties.DEFAULT));
-			}
-		}
-		for (ModularArmorType armor : ModularArmorType.values()) {
-			for (ModularMaterial material : ModMaterials.plateMaterials()) {
-				Identifier id = ModularDreams.id("modular_" + armor.id + "_" + material.id());
-				consumer.accept(id, new ClientItem(ItemModelUtils.plainModel(id), ClientItem.Properties.DEFAULT));
-			}
-		}
-	}
+        @Override
+        protected void configure(java.util.function.BiConsumer<Identifier, ClientItem> consumer,
+                        HolderLookup.Provider provider) {
+                // ---- part items: grayscale texture + material tint ----
+                for (PartType part : PartType.values()) {
+                        for (ModularMaterial material : part.allowedMaterials()) {
+                                Identifier id = ModularDreams.id(material.id() + "_" + part.id);
+                                consumer.accept(id, new ClientItem(
+                                                ItemModelUtils.tintedModel(ModularDreams.id(part.id),
+                                                                ItemModelUtils.constantTint(material.color())),
+                                                ClientItem.Properties.DEFAULT));
+                        }
+                }
+        }
 
-	@Override
-	public String getName() {
-		return "Modular Dreams Item Definitions";
-	}
+        @Override
+        public String getName() {
+                return "Modular Dreams Item Definitions";
+        }
 }
