@@ -39,6 +39,10 @@ import com.modulardreams.stats.ModTraits;
  *       TiC 1.12 / Legacy's Construct stats (120/4.0/3.0, handle 0.5),
  *       gold heads use vanilla gold-tool stats (32/12.0/0.0, wood tier),
  *       blaze and breeze rods use iron-like handles per design.</li>
+ *   <li><b>Rods are HANDLE-ONLY</b> (build 18): blaze and breeze rods can
+ *       no longer be used as bindings - they register without the binding
+ *       role. All material tints use the original build-17 palette
+ *       (restored in build 20).</li>
  *   <li>All traits are the EMPTY placeholder until the traits milestone.</li>
  * </ul>
  */
@@ -81,36 +85,39 @@ public class ModMaterials {
         private static void full(String id, int color, Supplier<Ingredient> crafting, TagKey<Item> repair, MaterialTier tier,
                         int dur, float speed, float atk, int ench, float handleMod, int extraDur) {
                 register(new ModularMaterial(id, color, crafting, repair, tier, dur, speed, atk, ench,
-                                handleMod, 0, extraDur, PLACEHOLDER, false));
+                                handleMod, 0, extraDur, PLACEHOLDER, false), true);
         }
 
         /** Head + binding only (no handle variant). */
         private static void headBinding(String id, int color, Supplier<Ingredient> crafting, TagKey<Item> repair,
                         MaterialTier tier, int dur, float speed, float atk, int ench, int extraDur) {
                 register(new ModularMaterial(id, color, crafting, repair, tier, dur, speed, atk, ench,
-                                1.0F, 0, extraDur, PLACEHOLDER, false));
+                                1.0F, 0, extraDur, PLACEHOLDER, false), true);
         }
 
-        /** Handle + binding only (no head variant). */
-        private static void handleBinding(String id, int color, Supplier<Ingredient> crafting, float handleMod, int extraDur) {
+        /** Handle only (no head, NO binding variant - e.g. blaze/breeze rods). */
+        private static void handleOnly(String id, int color, Supplier<Ingredient> crafting, float handleMod, int extraDur) {
                 register(new ModularMaterial(id, color, crafting, null, MaterialTier.WOOD, 0, 0.0F, 0.0F, 0,
-                                handleMod, 0, extraDur, PLACEHOLDER, false));
+                                handleMod, 0, extraDur, PLACEHOLDER, false), false);
         }
 
         /** Binding only. */
         private static void binding(String id, int color, Supplier<Ingredient> crafting, int extraDur) {
                 register(new ModularMaterial(id, color, crafting, null, MaterialTier.WOOD, 0, 0.0F, 0.0F, 0,
-                                1.0F, 0, extraDur, PLACEHOLDER, false));
+                                1.0F, 0, extraDur, PLACEHOLDER, false), true);
         }
 
-        private static void register(ModularMaterial mat) {
+        private static void register(ModularMaterial mat, boolean canBind) {
                 BY_ID.put(mat.id(), mat);
                 MATERIALS.add(mat);
                 // head materials need real head stats
                 if (mat.durability() > 0) {
                         HEAD_MATERIALS.add(mat);
                 }
-                BINDING_MATERIALS.add(mat);
+                // bindings are opt-in (build 18): blaze/breeze rods are HANDLE-ONLY
+                if (canBind) {
+                        BINDING_MATERIALS.add(mat);
+                }
                 // handle materials: wood/stone/flint/bone/blaze/breeze per design, plus metals
                 if (mat.handleModifier() != 1.0F || mat.durability() > 0 || mat.id().endsWith("rod")) {
                         HANDLE_MATERIALS.add(mat);
@@ -143,9 +150,9 @@ public class ModMaterials {
                 binding("string", 0xE6E2D3, () -> Ingredient.of(Items.STRING), 25);
                 binding("slime", 0x6FC356, () -> Ingredient.of(Items.SLIME_BALL), 50);
 
-                // --- handle-only rods (iron-like handles per design) ---
-                handleBinding("blaze_rod", 0xFDB02F, () -> Ingredient.of(Items.BLAZE_ROD), 1.1F, 0);
-                handleBinding("breeze_rod", 0x8FB6C8, () -> Ingredient.of(Items.BREEZE_ROD), 1.1F, 0);
+                // --- handle-only rods (build 18: no binding role, original tints) ---
+                handleOnly("blaze_rod", 0xFDB02F, () -> Ingredient.of(Items.BLAZE_ROD), 1.1F, 0);
+                handleOnly("breeze_rod", 0x8FB6C8, () -> Ingredient.of(Items.BREEZE_ROD), 1.1F, 0);
         }
 
         // ------------------------------------------------------------------

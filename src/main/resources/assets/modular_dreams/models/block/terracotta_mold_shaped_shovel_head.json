@@ -45,8 +45,7 @@
             0,
             16,
             1
-          ],
-          "cullface": "down"
+          ]
         },
         "south": {
           "texture": "#side",
@@ -55,8 +54,7 @@
             0,
             16,
             1
-          ],
-          "cullface": "down"
+          ]
         },
         "west": {
           "texture": "#side",
@@ -65,8 +63,7 @@
             0,
             16,
             1
-          ],
-          "cullface": "down"
+          ]
         },
         "east": {
           "texture": "#side",
@@ -75,8 +72,7 @@
             0,
             16,
             1
-          ],
-          "cullface": "down"
+          ]
         }
       }
     }

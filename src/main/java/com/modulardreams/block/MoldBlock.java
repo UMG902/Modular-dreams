@@ -34,10 +34,13 @@ import com.modulardreams.part.PartType;
  * A placeable mold block - the CLAY mold and the TERRACOTTA mold share this
  * class. Both use the flat cutting-board model (one pixel tall); right-clicking
  * a placed CLAY mold with a PART item presses that shape into it (the part is
- * only a template and is not consumed). The shape lives in the {@code shape}
- * BLOCK STATE PROPERTY: every shaped state points at a block model whose top
- * face is a cutout texture with the part's silhouette removed, so the mold
- * shows a real carved cavity (see {@code MoldShape}).
+ * only a template and is not consumed). Using a different part re-shapes the
+ * mold - the old shape is replaced with the new one (build 17). The shape
+ * lives in the {@code shape} BLOCK STATE PROPERTY: every shaped state points
+ * at a block model whose top face is a cutout texture with the part's
+ * silhouette removed, so the mold shows a real carved cavity (see
+ * {@code MoldShape}). The same carving shows on the mold ITEM (the item
+ * definition switches models on the {@code mold_part} component).
  * Terracotta molds reject shaping: they keep the shape they were baked with.
  *
  * <p>Breaking a mold drops its item carrying the {@code mold_part} shape
@@ -125,9 +128,6 @@ public class MoldBlock extends Block implements EntityBlock {
                 if (this == ModBlocks.TERRACOTTA_MOLD) {
                         return InteractionResult.PASS;
                 }
-                if (state.getValue(SHAPE) != MoldShape.NONE) {
-                        return InteractionResult.PASS; // already shaped
-                }
                 var identity = ModPartItems.resolve(stack);
                 if (identity.isEmpty()) {
                         return InteractionResult.PASS;
@@ -138,7 +138,9 @@ public class MoldBlock extends Block implements EntityBlock {
                         return InteractionResult.PASS;
                 }
                 // the shape travels through the BLOCK STATE: flag 3 syncs it to
-                // clients and the cutout model shows the carved cavity at once
+                // clients and the cutout model shows the carved cavity at once.
+                // Using a different part simply RE-SHAPES the clay mold (build 17):
+                // the old shape is pressed flat and the new one pressed in.
                 level.setBlock(pos, state.setValue(SHAPE, MoldShape.of(part)), 3);
                 level.playSound(null, pos, SoundEvents.GRAVEL_PLACE, SoundSource.BLOCKS, 0.8F, 1.2F);
                 return InteractionResult.SUCCESS_SERVER;

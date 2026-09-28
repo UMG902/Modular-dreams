@@ -194,7 +194,7 @@ public class ModLangProvider extends FabricLanguageProvider {
                 builder.add("guide.modular_dreams.molds.1",
                                 "Craft a CLAY MOLD from four clay balls and place it on the ground - both molds sit flat like a cutting board.");
                 builder.add("guide.modular_dreams.molds.2",
-                                "Right-click the placed CLAY mold with any part to press that shape into the clay. The part is only a template - it is not consumed. The mold surface is CUT OUT where the part would sit, leaving a real mold cavity. Terracotta molds cannot be shaped by hand: they keep the shape they were baked with.");
+                                "Right-click the placed CLAY mold with any part to press that shape into the clay. The part is only a template - it is not consumed. Changed your mind? Use a different part on the mold to RE-SHAPE it as often as you like. The mold surface is CUT OUT where the part would sit, leaving a real mold cavity - in the world and on the item. Terracotta molds cannot be shaped by hand: they keep the shape they were baked with.");
                 builder.add("guide.modular_dreams.molds.3",
                                 "Break the shaped mold to pick it up, then cook it in a furnace: clay molds become TERRACOTTA molds of the same shape. The terracotta mold is a block too - you can place it down just like the clay one.");
                 builder.add("guide.modular_dreams.molds.4",
