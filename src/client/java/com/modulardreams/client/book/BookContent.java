@@ -195,6 +195,11 @@ public final class BookContent {
                                         trim(material.handleModifier()) + "x / "
                                                         + (material.handleDurabilityBonus() >= 0 ? "+" : "")
                                                         + material.handleDurabilityBonus())));
+                        if (material.handleStatBoost() != 1.0F) {
+                                // build 21: diamond handle boosts the tool's other stats
+                                elements.add(new Paragraph(statLine("guide.modular_dreams.material.stat_boost",
+                                                trim(material.handleStatBoost()) + "x mining speed & attack")));
+                        }
                         elements.add(new Paragraph(statLine("guide.modular_dreams.material.binding",
                                         (material.extraDurabilityBonus() >= 0 ? "+" : "")
                                                         + material.extraDurabilityBonus())));

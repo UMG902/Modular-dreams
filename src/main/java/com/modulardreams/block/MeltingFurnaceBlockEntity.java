@@ -192,6 +192,10 @@ public class MeltingFurnaceBlockEntity extends BlockEntity implements Container,
                 if (stack.is(Items.GOLD_INGOT)) {
                         return ModMaterials.getOrThrow("gold");
                 }
+                // build 21: diamond melts and casts like the metals
+                if (stack.is(Items.DIAMOND)) {
+                        return ModMaterials.getOrThrow("diamond");
+                }
                 return null;
         }
 

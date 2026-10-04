@@ -43,6 +43,11 @@ import com.modulardreams.stats.ModTraits;
  *       no longer be used as bindings - they register without the binding
  *       role. All material tints use the original build-17 palette
  *       (restored in build 20).</li>
+ *   <li><b>Diamond joins in build 21</b> as a full material (1500-dur head,
+ *       1.3x-durability handle that ALSO boosts the tool's mining speed and
+ *       attack by 1.1x) with the HARDENED trait recorded - the trait effect
+ *       itself stays dormant until the traits milestone. Netherite is NOT a
+ *       material: it is reserved for the upgrade system, vanilla-style.</li>
  *   <li>All traits are the EMPTY placeholder until the traits milestone.</li>
  * </ul>
  */
@@ -84,27 +89,38 @@ public class ModMaterials {
         /** Full material (head + binding + handle). */
         private static void full(String id, int color, Supplier<Ingredient> crafting, TagKey<Item> repair, MaterialTier tier,
                         int dur, float speed, float atk, int ench, float handleMod, int extraDur) {
+                full(id, color, crafting, repair, tier, dur, speed, atk, ench, handleMod, 1.0F, extraDur,
+                                PLACEHOLDER);
+        }
+
+        /**
+         * Full material with a handle stat boost and its own trait(s)
+         * (build 21: diamond - 1.1x speed/attack from the handle, HARDENED).
+         */
+        private static void full(String id, int color, Supplier<Ingredient> crafting, TagKey<Item> repair, MaterialTier tier,
+                        int dur, float speed, float atk, int ench, float handleMod, float handleStatBoost, int extraDur,
+                        List<ModTraits> traits) {
                 register(new ModularMaterial(id, color, crafting, repair, tier, dur, speed, atk, ench,
-                                handleMod, 0, extraDur, PLACEHOLDER, false), true);
+                                handleMod, handleStatBoost, 0, extraDur, traits, false), true);
         }
 
         /** Head + binding only (no handle variant). */
         private static void headBinding(String id, int color, Supplier<Ingredient> crafting, TagKey<Item> repair,
                         MaterialTier tier, int dur, float speed, float atk, int ench, int extraDur) {
                 register(new ModularMaterial(id, color, crafting, repair, tier, dur, speed, atk, ench,
-                                1.0F, 0, extraDur, PLACEHOLDER, false), true);
+                                1.0F, 1.0F, 0, extraDur, PLACEHOLDER, false), true);
         }
 
         /** Handle only (no head, NO binding variant - e.g. blaze/breeze rods). */
         private static void handleOnly(String id, int color, Supplier<Ingredient> crafting, float handleMod, int extraDur) {
                 register(new ModularMaterial(id, color, crafting, null, MaterialTier.WOOD, 0, 0.0F, 0.0F, 0,
-                                handleMod, 0, extraDur, PLACEHOLDER, false), false);
+                                handleMod, 1.0F, 0, extraDur, PLACEHOLDER, false), false);
         }
 
         /** Binding only. */
         private static void binding(String id, int color, Supplier<Ingredient> crafting, int extraDur) {
                 register(new ModularMaterial(id, color, crafting, null, MaterialTier.WOOD, 0, 0.0F, 0.0F, 0,
-                                1.0F, 0, extraDur, PLACEHOLDER, false), true);
+                                1.0F, 1.0F, 0, extraDur, PLACEHOLDER, false), true);
         }
 
         private static void register(ModularMaterial mat, boolean canBind) {
@@ -143,6 +159,13 @@ public class ModMaterials {
                                 MaterialTier.IRON, 250, 6.0F, 2.0F, 14, 1.1F, 50);
                 full("gold", 0xF9DE4B, () -> Ingredient.of(Items.GOLD_INGOT), ItemTags.GOLD_TOOL_MATERIALS,
                                 MaterialTier.GOLD, 32, 12.0F, 0.0F, 22, 1.0F, 100);
+                // diamond (build 21): 1500-dur head, 1.3x-durability AND 1.1x
+                // speed/attack handle, HARDENED trait (recorded, dormant).
+                // Netherite deliberately NOT a material - it arrives as an
+                // upgrade (like vanilla) once the upgrade system lands.
+                full("diamond", 0x4AEDD9, () -> Ingredient.of(Items.DIAMOND), ItemTags.DIAMOND_TOOL_MATERIALS,
+                                MaterialTier.DIAMOND, 1500, 8.0F, 3.0F, 10, 1.3F, 1.1F, 50,
+                                List.of(ModTraits.HARDENED));
 
                 // --- binding-only materials (Part Builder bindings) ---
                 binding("leather", 0xA0683F, () -> Ingredient.of(Items.LEATHER), 30);
@@ -185,8 +208,12 @@ public class ModMaterials {
                 return List.copyOf(HANDLE_MATERIALS);
         }
 
-        /** Materials that can be melted into parts (copper, iron, gold). */
+        /**
+         * Materials that can be melted into parts (copper, iron, gold and -
+         * since build 21 - diamond; like the vanilla metals it cannot be
+         * carved in the Part Builder).
+         */
         public static boolean isMeltableMetal(String id) {
-                return id.equals("copper") || id.equals("iron") || id.equals("gold");
+                return id.equals("copper") || id.equals("iron") || id.equals("gold") || id.equals("diamond");
         }
 }

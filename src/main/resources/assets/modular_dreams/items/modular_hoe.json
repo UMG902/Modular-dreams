@@ -94,6 +94,16 @@
         "value": 16375371
        }
       ]
+     },
+     "diamond": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:handle",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 4910553
+       }
+      ]
      }
     }
    },
@@ -169,6 +179,16 @@
         "value": 16375371
        }
       ]
+     },
+     "diamond": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:hoe_head",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 4910553
+       }
+      ]
      }
     }
    },
@@ -242,6 +262,16 @@
        {
         "type": "minecraft:constant",
         "value": 16375371
+       }
+      ]
+     },
+     "diamond": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:hoe_binding",
+      "tints": [
+       {
+        "type": "minecraft:constant",
+        "value": 4910553
        }
       ]
      },

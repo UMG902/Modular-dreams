@@ -18,6 +18,20 @@ public enum ModTraits {
         EMPTY("empty", Category.ANY),
 
         // ---- tool traits (dormant until traits milestone) ----
+        /**
+         * Diamond trait (design recorded in build 21, effect dormant until the
+         * traits milestone): the tool has a 50% chance to lose NO durability
+         * when any of these holds:
+         * <ol>
+         *   <li>mining a block of a LOWER mining tier than the tool's tier;</li>
+         *   <li>attacking a mob whose health is less than double the tool's
+         *       attack stat;</li>
+         *   <li>taking a hit from a damage source whose damage is less than
+         *       the armor + armor toughness stats (armor-side condition -
+         *       pinned down when the armor milestone lands).</li>
+         * </ol>
+         */
+        HARDENED("hardened", Category.TOOL),
         /** Netherite head: strikes ignite enemies for a short moment. */
         FIERY("fiery", Category.TOOL),
         /** Obsidian head: extremely hard — takes 20% less durability damage. */

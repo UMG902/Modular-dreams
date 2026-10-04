@@ -117,8 +117,11 @@ public class ModLangProvider extends FabricLanguageProvider {
                         }
                 }
 
-                // traits (only EMPTY is used in the current overhaul step)
+                // traits (EMPTY is the placeholder on all other materials;
+                // diamond ships its HARDENED design in build 21 - dormant)
                 addTrait(builder, ModTraits.EMPTY, "Empty", "A placeholder - real traits come with the next update.");
+                addTrait(builder, ModTraits.HARDENED, "Hardened",
+                                "50% chance to take no durability damage while mining softer blocks, striking weak mobs, or shrugging off light hits. (The effect awakens in a future update.)");
 
                 // tooltips
                 builder.add("tooltip.modular_dreams.parts", "Parts:");
@@ -182,7 +185,7 @@ public class ModLangProvider extends FabricLanguageProvider {
                 builder.add("guide.modular_dreams.book.started.partbuilder.3",
                                 "Each shape costs a few units of material - a pickaxe head takes 3, a binding 2, a shovel head 1.");
                 builder.add("guide.modular_dreams.book.started.partbuilder.4",
-                                "Metals cannot be carved: copper, iron and gold parts must be melted (see the Molds chapter).");
+                                "Metals and diamond cannot be carved: copper, iron, gold and diamond parts must be melted (see the Molds chapter).");
                 builder.add("guide.modular_dreams.started.2.title", "The Assembly Table");
                 builder.add("guide.modular_dreams.started.2.1",
                                 "The ASSEMBLY TABLE has three input slots in fixed order: HEAD on top, BINDING in the middle, HANDLE at the bottom.");
@@ -203,14 +206,14 @@ public class ModLangProvider extends FabricLanguageProvider {
                 builder.add("guide.modular_dreams.molds.melting.1",
                                 "Place a MELTING UPGRADE directly UNDERNEATH a furnace, then insert a shaped mold: right-click the upgrade with the mold, or open it (right-click with anything else) and drop the mold into the bottom slot.");
                 builder.add("guide.modular_dreams.molds.melting.2",
-                                "Put copper, iron or gold ingots into the furnace's top slot. With a mold inserted, the metal melts down instead of sitting idle.");
+                                "Put copper, iron, gold or diamond into the furnace's top slot. With a mold inserted, the metal melts down instead of sitting idle.");
                 builder.add("guide.modular_dreams.molds.melting.3",
                                 "Each melted ingot fills the mold: the finished part appears in the MELTING UPGRADE's GUI, in the slot above the mold. The mold loses one use per cast.");
                 builder.add("guide.modular_dreams.molds.melting.4",
-                                "Metals work for every head, binding and handle. Without a mold nothing melts - the ingots simply wait.");
+                                "Metals and diamond work for every head, binding and handle. Without a mold nothing melts - the ingots simply wait.");
                 builder.add("guide.modular_dreams.materials.title", "Materials");
                 builder.add("guide.modular_dreams.materials.intro.1",
-                                "Head stats are copied from Tinkers' Construct. Handles change durability by a percentage, bindings add a small flat bonus.");
+                                "Head stats are copied from Tinkers' Construct. Handles change durability by a percentage - the diamond handle even boosts mining speed and attack by 10% - and bindings add a small flat bonus.");
                 builder.add("guide.modular_dreams.materials.intro.2",
                                 "Materials without head stats (leather, vine, string, slime) are binding-only; blaze and breeze rods are handle-only with iron-like handles.");
                 builder.add("guide.modular_dreams.material.tier", "tier");
@@ -220,12 +223,13 @@ public class ModLangProvider extends FabricLanguageProvider {
                 builder.add("guide.modular_dreams.material.damage", "Head attack:");
                 builder.add("guide.modular_dreams.material.enchantability", "Enchantability:");
                 builder.add("guide.modular_dreams.material.handle", "Handle (multiplier / bonus):");
+                builder.add("guide.modular_dreams.material.stat_boost", "Handle stat boost:");
                 builder.add("guide.modular_dreams.material.binding", "Binding bonus:");
                 builder.add("guide.modular_dreams.tools.title", "Tools & Stats");
                 builder.add("guide.modular_dreams.tools.1",
                                 "Tool durability = (head durability + binding bonus) x handle multiplier + handle bonus, then x the tool's own multiplier.");
                 builder.add("guide.modular_dreams.tools.2",
-                                "Mining speed and mining tier come from the head; attack damage comes from the head plus the tool type.");
+                                "Mining speed and mining tier come from the head; attack damage comes from the head plus the tool type. A diamond handle multiplies both mining speed and attack damage by 1.1.");
                 builder.add("guide.modular_dreams.tools.stats.title", "Stat Lines");
                 builder.add("guide.modular_dreams.tools.stats.durability", "Durability:");
                 builder.add("guide.modular_dreams.tools.stats.speed", "Mining speed:");
@@ -264,8 +268,8 @@ public class ModLangProvider extends FabricLanguageProvider {
                 builder.add("guide.modular_dreams.book.tips.b8",
                                 "The melting upgrade works while the furnace does other things - keep it fed with ingots.");
                 builder.add("guide.modular_dreams.book.tips.b9",
-                                "Modifiers and real material traits return in a future update - the Empty trait is a placeholder.");
+                                "Modifiers and more trait effects return in a future update - diamond's Hardened trait is already listed, it just needs to awaken.");
                 builder.add("guide.modular_dreams.book.tips.b10",
-                                "Diamond and netherite are not part of this build yet - they arrive with a later update.");
+                                "Diamond is in! Diamond parts are melted and cast like the metals. Netherite is NOT a material - it arrives as a tool upgrade in a later update, vanilla-style.");
         }
 }

@@ -65,6 +65,8 @@ import com.modulardreams.stats.StatsEngine;
  *       then x the tool's durability multiplier (sword 1.1, ...)</li>
  *   <li>mining speed = head speed x the tool's mining multiplier, tier from the head</li>
  *   <li>attack = (head attack x attack multiplier + base attack) x damage potential</li>
+ *   <li>since build 21 the handle can also boost mining speed and attack
+ *       (diamond handle = 1.1x both) via {@link ModularMaterial#handleStatBoost()}</li>
  * </ul>
  * Material stats come from Tinkers' Construct 3.12 (see {@link ModMaterials});
  * material traits are currently the EMPTY placeholder, so the trait branches
@@ -79,7 +81,7 @@ public final class StatsEngine {
          * it ticks in a player inventory (see {@link #refreshIfStale}), so tools from
          * previous builds automatically adopt the current stats without re-assembly.
          */
-        public static final int STATS_VERSION = 3;
+        public static final int STATS_VERSION = 4;
 
         private StatsEngine() {}
 
@@ -153,6 +155,8 @@ public final class StatsEngine {
 
                 // ---- mining speed & tier (head speed x the tool's mining multiplier) ----
                 float speed = head.speed() * type.miningSpeedMultiplier;
+                // build 21: some handles (diamond) boost the tool's other stats
+                speed *= handle.handleStatBoost();
                 speed *= (1.0F + modifierSum(data, Effect.MINING_SPEED_PCT));
 
                 MaterialTier tier = head.tier();
@@ -163,6 +167,8 @@ public final class StatsEngine {
                 // ---- attack stats (LC formula) ----
                 float damage = (head.attackDamageBonus() * type.attackMultiplier + type.baseAttack)
                                 * type.damagePotential;
+                // build 21: handle stat boost applies to the tool's final attack
+                damage *= handle.handleStatBoost();
                 damage += modifierSum(data, Effect.ATTACK_DAMAGE);
 
                 float attackSpeed = type.attackSpeed;
@@ -414,9 +420,11 @@ public final class StatsEngine {
                                 + Math.round(modifierSum(data, Effect.DURABILITY_FLAT));
 
                 float speed = head.speed() * type.miningSpeedMultiplier
+                                * handle.handleStatBoost()
                                 * (1.0F + modifierSum(data, Effect.MINING_SPEED_PCT));
                 float damage = (head.attackDamageBonus() * type.attackMultiplier + type.baseAttack)
-                                * type.damagePotential + modifierSum(data, Effect.ATTACK_DAMAGE);
+                                * type.damagePotential * handle.handleStatBoost()
+                                + modifierSum(data, Effect.ATTACK_DAMAGE);
                 float attackSpeed = type.attackSpeed + modifierSum(data, Effect.ATTACK_SPEED);
                 int ench = head.enchantmentValue();
                 MaterialTier tier = head.tier();

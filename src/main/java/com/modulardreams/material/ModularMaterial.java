@@ -35,6 +35,9 @@ import com.modulardreams.stats.ModTraits;
  * @param enchantmentValue   enchantability contribution (from the head)
  * @param handleModifier     durability multiplier of the tool when used as the
  *                           handle (TiC 3 handle % + 1: iron = 1.1, flint = 0.85)
+ * @param handleStatBoost    multiplier applied to the assembled tool's mining
+ *                           speed and attack damage when used as the handle
+ *                           (1.0 = no boost; diamond = 1.1 - build 21)
  * @param handleDurabilityBonus flat durability added by the handle (TiC 3: always 0)
  * @param extraDurabilityBonus  flat durability added when used as a binding
  * @param traits             material traits applied wherever the material is used
@@ -51,6 +54,7 @@ public record ModularMaterial(
                 float attackDamageBonus,
                 int enchantmentValue,
                 float handleModifier,
+                float handleStatBoost,
                 int handleDurabilityBonus,
                 int extraDurabilityBonus,
                 List<ModTraits> traits,
