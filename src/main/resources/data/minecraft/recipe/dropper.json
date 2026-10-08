@@ -1,0 +1,17 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "key": {
+  "X": "#modular_dreams:stone_materials",
+  "R": "minecraft:redstone"
+ },
+ "pattern": [
+  "XXX",
+  "X X",
+  "XRX"
+ ],
+ "result": {
+  "id": "minecraft:dropper",
+  "count": 1
+ }
+}

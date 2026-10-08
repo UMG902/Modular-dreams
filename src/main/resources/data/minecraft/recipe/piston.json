@@ -1,0 +1,19 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "key": {
+  "P": "#minecraft:planks",
+  "C": "#modular_dreams:stone_materials",
+  "I": "minecraft:iron_ingot",
+  "R": "minecraft:redstone"
+ },
+ "pattern": [
+  "PPP",
+  "CIC",
+  "CRC"
+ ],
+ "result": {
+  "id": "minecraft:piston",
+  "count": 1
+ }
+}

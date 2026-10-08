@@ -1,0 +1,6 @@
+{
+ "type": "modular_dreams:smithing_modifier",
+ "base": "#modular_dreams:modular_tools",
+ "addition": "minecraft:diamond",
+ "trait": "diamond"
+}

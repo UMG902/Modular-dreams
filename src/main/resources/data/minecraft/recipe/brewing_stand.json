@@ -1,0 +1,16 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "key": {
+  "B": "minecraft:blaze_rod",
+  "C": "#modular_dreams:stone_materials"
+ },
+ "pattern": [
+  " B ",
+  "CCC"
+ ],
+ "result": {
+  "id": "minecraft:brewing_stand",
+  "count": 1
+ }
+}

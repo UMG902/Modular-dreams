@@ -1,0 +1,6 @@
+{
+ "type": "modular_dreams:armor_netherite_upgrade",
+ "template": "minecraft:netherite_upgrade_smithing_template",
+ "base": "#modular_dreams:modular_armor",
+ "addition": "minecraft:netherite_ingot"
+}

@@ -1,26 +1,13 @@
 classTweaker v1 official
 
-# Access widening for Modular Dreams datagen:
-# exposes the output consumers of ItemModelGenerators so we can register
-# custom layered item models and client item definitions.
-accessible field net/minecraft/client/data/models/ItemModelGenerators itemModelOutput Lnet/minecraft/client/data/models/ItemModelOutput;
-accessible field net/minecraft/client/data/models/ItemModelGenerators modelOutput Ljava/util/function/BiConsumer;
-
-# Menu screen registration (MenuScreens.register is private in 26.3):
+# Register client screens: MenuScreens.register + its constructor are private in 26.3
 accessible class net/minecraft/client/gui/screens/MenuScreens$ScreenConstructor
 accessible method net/minecraft/client/gui/screens/MenuScreens register (Lnet/minecraft/world/inventory/MenuType;Lnet/minecraft/client/gui/screens/MenuScreens$ScreenConstructor;)V
 
-# Block state generation for the station blocks:
-accessible field net/minecraft/client/data/models/BlockModelGenerators blockStateOutput Ljava/util/function/Consumer;
-accessible method net/minecraft/client/data/models/BlockModelGenerators plainVariant (Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/data/models/MultiVariant;
-
-# Modular tool item model type: registers "modular_dreams:modular_tool" into the
-# lazy item-model type mapper so client item definitions can use it
-# (see client/itemmodel/ModularToolItemModel).
+# Custom item model type ("modular_dreams:modular_tool") registers into the lazy id mapper
 accessible field net/minecraft/client/renderer/item/ItemModels ID_MAPPER Lnet/minecraft/util/ExtraCodecs$LateBoundIdMapper;
-accessible method net/minecraft/client/data/models/BlockModelGenerators createSimpleBlock (Lnet/minecraft/world/level/block/Block;Lnet/minecraft/client/data/models/MultiVariant;)Lnet/minecraft/client/data/models/blockstates/MultiVariantGenerator;
-# registers the client item definition pointing at a given model id - used to give
-# the station blocks proper 3D inventory rendering via their block models
-# (registerSimpleFlatItemModel referenced a block texture that does not exist and
-# produced textureless block items)
-accessible method net/minecraft/client/data/models/BlockModelGenerators registerSimpleItemModel (Lnet/minecraft/world/level/block/Block;Lnet/minecraft/resources/Identifier;)V
+
+# Kiln: swap the furnace BE's cached recipe check for the dynamic kiln filter
+# (smelt anything that has no smoking/blasting recipe). Field is private final.
+accessible field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity quickCheck Lnet/minecraft/world/item/crafting/RecipeManager$CachedCheck;
+mutable field net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity quickCheck Lnet/minecraft/world/item/crafting/RecipeManager$CachedCheck;

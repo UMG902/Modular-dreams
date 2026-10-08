@@ -1,323 +1,217 @@
 {
  "model": {
-  "type": "modular_dreams:modular_tool",
-  "layers": [
+  "type": "minecraft:select",
+  "property": "minecraft:display_context",
+  "cases": [
    {
-    "part": "handle",
-    "variants": {
-     "wood": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8018486
+    "when": [
+     "gui",
+     "ground",
+     "fixed",
+     "on_shelf"
+    ],
+    "model": {
+     "type": "modular_dreams:modular_tool",
+     "layers": [
+      {
+       "part": "handle",
+       "variants": {
+        "wood": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_wood"
+        },
+        "stone": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_stone"
+        },
+        "copper": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_copper"
+        },
+        "iron": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_iron"
+        },
+        "gold": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_gold"
+        },
+        "rose_gold": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_rose_gold"
+        },
+        "diamond": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_diamond"
+        },
+        "netherite": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_netherite"
+        },
+        "blaze_rod": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_blaze_rod"
+        },
+        "breeze_rod": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_shaft_breeze_rod"
+        }
        }
-      ]
-     },
-     "stone": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8355711
+      },
+      {
+       "part": "spear_head",
+       "variants": {
+        "wood": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_head_wood"
+        },
+        "stone": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_head_stone"
+        },
+        "copper": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_head_copper"
+        },
+        "iron": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_head_iron"
+        },
+        "gold": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_head_gold"
+        },
+        "rose_gold": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_head_rose_gold"
+        },
+        "diamond": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_head_diamond"
+        },
+        "netherite": {
+         "type": "minecraft:model",
+         "model": "modular_dreams:item/modular/spear_head_netherite"
+        }
        }
-      ]
-     },
-     "flint": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
+      }
+     ],
+     "fallback": {
+      "type": "minecraft:composite",
+      "models": [
        {
-        "type": "minecraft:constant",
-        "value": 4868690
-       }
-      ]
-     },
-     "bone": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
+        "type": "minecraft:model",
+        "model": "modular_dreams:item/modular/spear_shaft_wood"
+       },
        {
-        "type": "minecraft:constant",
-        "value": 15329244
-       }
-      ]
-     },
-     "blaze_rod": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 16625711
-       }
-      ]
-     },
-     "breeze_rod": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 9418440
-       }
-      ]
-     },
-     "copper": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15170646
-       }
-      ]
-     },
-     "iron": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 14211288
-       }
-      ]
-     },
-     "gold": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 16375371
-       }
-      ]
-     },
-     "diamond": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4910553
-       }
-      ]
-     }
-    }
-   },
-   {
-    "part": "spear_head",
-    "variants": {
-     "wood": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8018486
-       }
-      ]
-     },
-     "stone": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8355711
-       }
-      ]
-     },
-     "flint": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4868690
-       }
-      ]
-     },
-     "bone": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15329244
-       }
-      ]
-     },
-     "copper": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15170646
-       }
-      ]
-     },
-     "iron": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 14211288
-       }
-      ]
-     },
-     "gold": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 16375371
-       }
-      ]
-     },
-     "diamond": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4910553
-       }
-      ]
-     }
-    }
-   },
-   {
-    "part": "spear_binding",
-    "variants": {
-     "wood": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8018486
-       }
-      ]
-     },
-     "stone": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8355711
-       }
-      ]
-     },
-     "flint": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4868690
-       }
-      ]
-     },
-     "bone": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15329244
-       }
-      ]
-     },
-     "copper": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15170646
-       }
-      ]
-     },
-     "iron": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 14211288
-       }
-      ]
-     },
-     "gold": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 16375371
-       }
-      ]
-     },
-     "diamond": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4910553
-       }
-      ]
-     },
-     "leather": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 10512447
-       }
-      ]
-     },
-     "vine": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 5012008
-       }
-      ]
-     },
-     "string": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15131347
-       }
-      ]
-     },
-     "slime": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:spear_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 7324502
+        "type": "minecraft:model",
+        "model": "modular_dreams:item/modular/spear_head_iron"
        }
       ]
      }
     }
    }
   ],
-  "fallback": "modular_dreams:modular_spear"
- }
+  "fallback": {
+   "type": "modular_dreams:modular_tool",
+   "layers": [
+    {
+     "part": "handle",
+     "variants": {
+      "wood": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_wood"
+      },
+      "stone": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_stone"
+      },
+      "copper": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_copper"
+      },
+      "iron": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_iron"
+      },
+      "gold": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_gold"
+      },
+      "rose_gold": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_rose_gold"
+      },
+      "diamond": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_diamond"
+      },
+      "netherite": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_netherite"
+      },
+      "blaze_rod": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_blaze_rod"
+      },
+      "breeze_rod": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_shaft_hand_breeze_rod"
+      }
+     }
+    },
+    {
+     "part": "spear_head",
+     "variants": {
+      "wood": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_head_hand_wood"
+      },
+      "stone": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_head_hand_stone"
+      },
+      "copper": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_head_hand_copper"
+      },
+      "iron": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_head_hand_iron"
+      },
+      "gold": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_head_hand_gold"
+      },
+      "rose_gold": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_head_hand_rose_gold"
+      },
+      "diamond": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_head_hand_diamond"
+      },
+      "netherite": {
+       "type": "minecraft:model",
+       "model": "modular_dreams:item/modular/spear_head_hand_netherite"
+      }
+     }
+    }
+   ],
+   "fallback": {
+    "type": "minecraft:composite",
+    "models": [
+     {
+      "type": "minecraft:model",
+      "model": "modular_dreams:item/modular/spear_shaft_hand_wood"
+     },
+     {
+      "type": "minecraft:model",
+      "model": "modular_dreams:item/modular/spear_head_hand_iron"
+     }
+    ]
+   }
+  }
+ },
+ "swap_animation_scale": 1.95
 }

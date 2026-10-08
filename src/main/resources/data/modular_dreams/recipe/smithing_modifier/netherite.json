@@ -1,0 +1,8 @@
+{
+ "type": "modular_dreams:smithing_modifier",
+ "template": "minecraft:netherite_upgrade_smithing_template",
+ "base": "#modular_dreams:modular_tools",
+ "addition": "minecraft:netherite_ingot",
+ "trait": "netherite",
+ "count": 1
+}

@@ -1,0 +1,12 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  "minecraft:copper_ingot",
+  "minecraft:gold_ingot"
+ ],
+ "result": {
+  "id": "modular_dreams:rose_gold_ingot",
+  "count": 2
+ }
+}

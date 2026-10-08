@@ -7,103 +7,43 @@
     "variants": {
      "wood": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8018486
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_handle_wood"
      },
      "stone": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8355711
-       }
-      ]
-     },
-     "flint": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4868690
-       }
-      ]
-     },
-     "bone": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15329244
-       }
-      ]
-     },
-     "blaze_rod": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 16625711
-       }
-      ]
-     },
-     "breeze_rod": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 9418440
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_handle_stone"
      },
      "copper": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15170646
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_handle_copper"
      },
      "iron": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 14211288
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_handle_iron"
      },
      "gold": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 16375371
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_handle_gold"
+     },
+     "rose_gold": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:item/modular/sword_handle_rose_gold"
      },
      "diamond": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_handle",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4910553
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_handle_diamond"
+     },
+     "netherite": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:item/modular/sword_handle_netherite"
+     },
+     "blaze_rod": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:item/modular/sword_handle_blaze_rod"
+     },
+     "breeze_rod": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:item/modular/sword_handle_breeze_rod"
      }
     }
    },
@@ -112,212 +52,51 @@
     "variants": {
      "wood": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8018486
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_head_wood"
      },
      "stone": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8355711
-       }
-      ]
-     },
-     "flint": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4868690
-       }
-      ]
-     },
-     "bone": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15329244
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_head_stone"
      },
      "copper": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15170646
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_head_copper"
      },
      "iron": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 14211288
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_head_iron"
      },
      "gold": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 16375371
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_head_gold"
+     },
+     "rose_gold": {
+      "type": "minecraft:model",
+      "model": "modular_dreams:item/modular/sword_head_rose_gold"
      },
      "diamond": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_head",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4910553
-       }
-      ]
-     }
-    }
-   },
-   {
-    "part": "sword_binding",
-    "variants": {
-     "wood": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8018486
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_head_diamond"
      },
-     "stone": {
+     "netherite": {
       "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 8355711
-       }
-      ]
-     },
-     "flint": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4868690
-       }
-      ]
-     },
-     "bone": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15329244
-       }
-      ]
-     },
-     "copper": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15170646
-       }
-      ]
-     },
-     "iron": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 14211288
-       }
-      ]
-     },
-     "gold": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 16375371
-       }
-      ]
-     },
-     "diamond": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 4910553
-       }
-      ]
-     },
-     "leather": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 10512447
-       }
-      ]
-     },
-     "vine": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 5012008
-       }
-      ]
-     },
-     "string": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 15131347
-       }
-      ]
-     },
-     "slime": {
-      "type": "minecraft:model",
-      "model": "modular_dreams:sword_binding",
-      "tints": [
-       {
-        "type": "minecraft:constant",
-        "value": 7324502
-       }
-      ]
+      "model": "modular_dreams:item/modular/sword_head_netherite"
      }
     }
    }
   ],
-  "fallback": "modular_dreams:modular_sword"
+  "fallback": {
+   "type": "minecraft:composite",
+   "models": [
+    {
+     "type": "minecraft:model",
+     "model": "modular_dreams:item/modular/sword_handle_wood"
+    },
+    {
+     "type": "minecraft:model",
+     "model": "modular_dreams:item/modular/sword_head_iron"
+    }
+   ]
+  }
  }
 }

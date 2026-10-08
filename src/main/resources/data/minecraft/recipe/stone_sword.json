@@ -1,0 +1,17 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "equipment",
+ "key": {
+  "X": "#modular_dreams:stone_materials",
+  "I": "minecraft:stick"
+ },
+ "pattern": [
+  "X",
+  "X",
+  "I"
+ ],
+ "result": {
+  "id": "minecraft:stone_sword",
+  "count": 1
+ }
+}

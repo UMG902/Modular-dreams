@@ -1,0 +1,12 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  "minecraft:magma_cream",
+  "minecraft:magma_cream"
+ ],
+ "result": {
+  "id": "modular_dreams:magma_cream_lining",
+  "count": 1
+ }
+}

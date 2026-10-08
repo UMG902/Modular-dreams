@@ -1,0 +1,12 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  "minecraft:slime_ball",
+  "minecraft:slime_ball"
+ ],
+ "result": {
+  "id": "modular_dreams:slime_lining",
+  "count": 1
+ }
+}

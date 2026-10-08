@@ -1,7 +1,0 @@
-// 26.3	-999999999-01-01T00:00:00	Modular Dreams/Modular Dreams Block Loot
-37c8dce185693fa94f28b088218df39d6164efe1 data/modular_dreams/loot_table/blocks/assembly_table.json
-86c4b4de6a97e39632769e190503efaa54185c2c data/modular_dreams/loot_table/blocks/clay_mold.json
-8de063a111e6c2bec3f0bff0b4851617ca11a275 data/modular_dreams/loot_table/blocks/melting_furnace.json
-7f974edc2b6bac7b3c8b3c1d43fb29b2bdc5f3fe data/modular_dreams/loot_table/blocks/melting_upgrade.json
-dd3e20a1092446ca05c4f07a0806615061a114c6 data/modular_dreams/loot_table/blocks/part_builder.json
-93bb0e07b4a32b84174d18973a19ca4d98c87bf6 data/modular_dreams/loot_table/blocks/terracotta_mold.json

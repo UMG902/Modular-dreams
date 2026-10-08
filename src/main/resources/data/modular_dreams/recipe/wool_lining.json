@@ -1,0 +1,12 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  "#minecraft:wool",
+  "#minecraft:wool"
+ ],
+ "result": {
+  "id": "modular_dreams:wool_lining",
+  "count": 1
+ }
+}

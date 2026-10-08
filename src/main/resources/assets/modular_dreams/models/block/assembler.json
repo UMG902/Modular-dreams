@@ -1,0 +1,8 @@
+{
+ "parent": "minecraft:block/cube_bottom_top",
+ "textures": {
+  "top": "modular_dreams:block/assembler_top",
+  "side": "modular_dreams:block/assembler_side",
+  "bottom": "modular_dreams:block/assembler_bottom"
+ }
+}

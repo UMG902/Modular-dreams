@@ -1,8 +1,0 @@
-{
-  "type": "modular_dreams:part_builder",
-  "cost": 3,
-  "ingredient": "#minecraft:stone_tool_materials",
-  "result": {
-    "id": "modular_dreams:stone_axe_head"
-  }
-}

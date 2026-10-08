@@ -1,7 +1,0 @@
-{
-  "type": "modular_dreams:part_builder",
-  "ingredient": "minecraft:bone",
-  "result": {
-    "id": "modular_dreams:bone_shovel_head"
-  }
-}

@@ -1,8 +1,0 @@
-{
-  "type": "modular_dreams:part_builder",
-  "cost": 2,
-  "ingredient": "minecraft:vine",
-  "result": {
-    "id": "modular_dreams:vine_sword_binding"
-  }
-}

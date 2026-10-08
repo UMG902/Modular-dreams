@@ -1,8 +1,0 @@
-{
-  "type": "modular_dreams:part_builder",
-  "cost": 2,
-  "ingredient": "minecraft:slime_ball",
-  "result": {
-    "id": "modular_dreams:slime_sword_binding"
-  }
-}

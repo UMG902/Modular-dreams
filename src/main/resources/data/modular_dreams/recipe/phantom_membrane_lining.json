@@ -1,0 +1,12 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  "minecraft:phantom_membrane",
+  "minecraft:phantom_membrane"
+ ],
+ "result": {
+  "id": "modular_dreams:phantom_membrane_lining",
+  "count": 1
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "key": {
+  "C": "minecraft:diamond",
+  "P": "modular_dreams:part_picker_iron"
+ },
+ "pattern": [
+  " C ",
+  "CPC",
+  " C "
+ ],
+ "result": {
+  "id": "modular_dreams:part_picker_diamond"
+ }
+}

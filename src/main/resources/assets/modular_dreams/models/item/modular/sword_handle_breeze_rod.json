@@ -1,0 +1,6 @@
+{
+ "parent": "minecraft:item/handheld",
+ "textures": {
+  "layer0": "modular_dreams:item/sword_handle_breeze_rod"
+ }
+}

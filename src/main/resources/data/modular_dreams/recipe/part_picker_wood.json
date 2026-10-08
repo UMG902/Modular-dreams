@@ -1,0 +1,16 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "key": {
+  "P": "#minecraft:planks",
+  "T": "minecraft:crafting_table"
+ },
+ "pattern": [
+  " P ",
+  "PTP",
+  " P "
+ ],
+ "result": {
+  "id": "modular_dreams:part_picker_wood"
+ }
+}

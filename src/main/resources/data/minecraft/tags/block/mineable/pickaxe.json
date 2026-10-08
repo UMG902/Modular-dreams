@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "modular_dreams:part_picker_stone",
+    "modular_dreams:part_picker_copper",
+    "modular_dreams:part_picker_iron",
+    "modular_dreams:part_picker_diamond",
+    "modular_dreams:kiln"
+  ]
+}

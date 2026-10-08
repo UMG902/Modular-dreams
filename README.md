@@ -1,168 +1,287 @@
-# Modular Dreams
+# Modular Dreams v2 — fresh start
 
-**A Tinkers' Construct / Construct's Armory-inspired modular equipment system for Minecraft Java Edition 26.3 (Fabric), built strictly from vanilla Minecraft tools, weapons, armor and resources.**
+A clean-slate rebuild of the Modular Dreams overhaul for **Minecraft 26.3 (Fabric)**.
+The v1 repo (https://github.com/UMG902/Modular-dreams) is used as an **API reference
+only** — no features, no ideas, ever.
 
-Modular Dreams turns vanilla gear into modular equipment: assemble tools and armor from parts made of vanilla materials, repair them with their component materials instead of re-crafting them, and upgrade them with Tinkers-style modifiers. No custom ores, no new materials — everything is built from what vanilla already gives you.
+Requires **Fabric Loader ≥ 0.19.5** and **Fabric API** for 26.3, on **Java 25**.
 
-> **Note about the project template:** the original template ZIP (`modular-dreams-template-26.3.zip`) did not arrive with the request (the upload directory was empty), so this project is built on the **official FabricMC `fabric-example-mod` template, branch `26.3`** — the exact same scaffold the fabricmc.net template generator produces, including its Gradle/Loom configuration, split main/client source sets and the Fabric API data-generation setup (`fabricApi { configureDataGeneration() { client = true } }` + `fabric-datagen` entrypoint). The template's Gradle/build configuration was preserved and adapted; nothing was replaced with an older-version setup.
+## The core loop
 
----
+1. **Mine materials** — wood (any planks), stone (**every stone variant counts as
+   cobblestone** in crafting), copper, iron, gold, **rose gold** (copper ingot +
+   gold ingot, shapeless → 2), diamond, netherite.
+2. **Part Picker** (5 tiers) — shapes **handles and heads**. Each tier works its own
+   material plus the next tier's: wood → wood + stone, stone → + copper,
+   copper → + iron/gold/rose gold, iron → + diamond, diamond → + **netherite**.
+   Costs match vanilla heads (pickaxe 3, axe 3, shovel 1, hoe 2, sword 2, spear 2,
+   handle 1). Stone picker recipes accept any stone variant.
+3. **Assembler** — put a handle + head in, take your tool out. It also **converts
+   vanilla tools** (head of the tool's material + wooden handle; netherite tools
+   convert with a netherite handle) while keeping enchantments, custom name and
+   relative wear. Vanilla spears (wooden, copper) convert too.
+4. **Tools** — pickaxe, axe, shovel, hoe, sword and the **spear** (26.3 vanilla
+   spear mechanics: charge-stab, lunge-enchantable — wooden heads use the wooden
+   spear sounds). Stats come from the head (Tinkers'-style values); the handle
+   multiplies durability and some handles boost speed and attack.
 
-## Requirements
+**Station crafting recipes:** the wood Part Picker is a crafting table ringed by
+planks; every higher tier is its material ringed around the previous picker.
+The Assembler is iron ingots around a diamond, over a stone-material block
+(pattern: ` I ` / `IDI` / ` S `).
 
-| Component | Version |
-|---|---|
-| Minecraft | **26.3** (stable) |
-| Fabric Loader | **>= 0.19.5** |
-| Fabric API | **0.161.0+26.3** |
-| Java | **>= 25** (Minecraft 26.3 requires Java 25) |
-| Fabric Loom | 1.17-SNAPSHOT (via Gradle wrapper 9.5.1) |
+**Part Picker option list per material:** the handle + one head per tool type
+(6) + the 4 armor platings where the material has them → **11 options for a full
+material**; rods offer only their handle; netherite offers tool parts but no
+platings. Armor plating costs are the vanilla armor material costs:
+**helmet 5, chestplate 8, leggings 7, boots 4**.
 
-Minecraft 26.1+ ships **unobfuscated** — Fabric no longer uses Yarn/intermediary for these versions, and neither does this project. All code targets Mojang's real (shipped) class names, e.g. `net.minecraft.resources.Identifier`.
+### Handle stats
 
-## Building
-
-```bash
-# requires a JDK 25 toolchain (JAVA_HOME must point at JDK 25)
-./gradlew build           # compiles + packages build/libs/modular-dreams-1.0.0.jar
-./gradlew runDatagen      # regenerates src/main/generated (models, lang, recipes, tags, advancements)
-```
-
-The Gradle wrapper downloads Gradle 9.5.1 automatically. Make sure `JAVA_HOME` points to a Java 25 installation, since the mod compiles with `options.release = 25`.
-
-## What's in the mod
-
-### Modular tools & weapons (7 types)
-
-Pickaxe, Axe, Shovel, Hoe, Sword, **Mace** and **Spear** — including Minecraft's mace (keeps its full smash-attack mechanics) and the vanilla spear (keeps its charged dash / kinetic weapon behavior). A tool's stats come from its parts:
-
-- **Head** — defines mining speed, mining tier, and contributes the most attack damage
-- **Handle** — multiplies durability, can adjust attack speed
-- **Binding / Guard** — adds further durability and can grant material traits
-
-Attack damage and attack speed are balanced for vanilla parity: an iron-headed modular sword hits exactly like a vanilla iron sword, a diamond-headed pickaxe mines exactly like a vanilla diamond pickaxe, etc.
-
-### Modular armor (4 pieces)
-
-Helmet, chestplate, leggings and boots assembled from **plates** (main material: defense, toughness, knockback resistance, durability) plus a **lining** (padding: utility attribute bonuses and extra enchantability). Armor built from a material *looks* like its vanilla counterpart — the per-instance `EQUIPPABLE` component reuses the vanilla equipment assets — and is fully trim- and enchantment-compatible.
-
-### Materials (all vanilla)
-
-- **19 tool materials**: 7 woods (oak, spruce, birch, cherry, bamboo, crimson, warped), bone, flint, stone, deepslate, blackstone, obsidian, amethyst, copper, iron, gold, diamond, netherite
-- **7 plate materials**: copper, iron, gold, diamond, netherite, turtle scute (helmet only — it is a shell, not sheet metal), armadillo scute
-- **5 lining materials**: leather, rabbit hide, phantom membrane, wool, slime ball
-
-### Traits (vanilla-logical, Tinkers-inspired)
-
-No arbitrary fantasy effects — each trait derives from what the material already *means* in vanilla:
-
-| Trait | Material | Effect |
+| Handle | Durability × | Speed/Attack × |
 |---|---|---|
-| Fiery | netherite | strikes ignite enemies |
-| Dense | obsidian | 20% less durability damage |
-| Featherweight | bone | +0.15 attack speed (handle) |
-| Resonant | amethyst | +10% mining speed (binding) |
-| Precious | diamond | cosmetic glint (binding) |
-| Gilded | gold | +3 enchantability (binding) |
-| Rooted | all woods | also repairable with sticks |
-| Spiky | flint | +0.5 attack damage |
-| Sturdy | iron | +5% durability per sturdy part |
-| Fireproof | netherite | item immune to fire/lava |
-| Cushioned | slime lining | increased safe fall distance |
-| Featherlight | phantom membrane lining | -15% fall damage |
-| Cozy | wool lining | +15% sneaking speed |
-| Aquatic | turtle plate | +20% swim speed |
-| Plated | armadillo plate | +5% knockback resistance |
-| Soft | leather lining | +0.5 armor |
-| Springy | rabbit hide lining | stronger jumps |
+| wood | 1.0 | 1.0 |
+| stone | 0.9 | 1.0 |
+| copper | 0.9 | 1.0 |
+| iron | 1.1 | 1.0 |
+| gold | 1.0 | 1.0 |
+| rose gold | 1.1 | 1.05 |
+| diamond | 1.3 | 1.1 |
+| netherite | 1.4 | 1.1 |
+| blaze rod | 1.1 | 1.0 |
+| breeze rod | 1.1 | 1.0 |
 
-### Modifiers (15)
+Formulas (baked by the `StatsEngine`): durability = head durability × handle
+multiplier, mining speed = head speed × handle boost, attack = head attack bonus ×
+handle boost + tool base damage, harvest tier and enchantability from the head.
 
-Applied in a crafting grid (assembled item + cost). Costs of 2+ items are deliberate: the cost item often doubles as a repair material, and a single item always means "repair" while 2+ means "upgrade".
+## Traits
 
-| Modifier | Cost / level | Max | Effect |
-|---|---|---|---|
-| Hasty | 3x redstone | 3 | +30% mining speed / level |
-| Sharp | 3x quartz | 3 | +1 attack damage / level |
-| Lucky | 3x lapis | 3 | Fortune (digging) / Looting (weapons) |
-| Silky | 4x amethyst shard | 1 | Silk Touch |
-| Fiery | 2x blaze powder | 3 | sets targets on fire |
-| Grippy | 3x string | 3 | +0.1 attack speed / level |
-| Bouncy | 3x slime ball | 2 | +0.5 attack knockback / level |
-| Reinforced | 2x obsidian | 3 | 15% less durability damage / level |
-| Diamonded | 2x diamond | 1 | +500 max durability |
-| Emeraled | 1x emerald | 1 | +50% max durability |
-| Netherited | 2x netherite ingot | 1 | netherite mining tier + fireproof |
-| Solid | 2x iron ingot | 2 | +10% knockback resistance / level |
-| Featherfall | 3x phantom membrane | 2 | -20% fall damage / level |
-| Swift Swim | 3x prismarine crystals | 2 | +25% swim speed / level |
-| Sneaky | 3x rabbit hide | 2 | +25% sneak speed / level |
+Every material owns a trait **that shares its name**: the trait of wooden parts
+is `wood`, a rose gold head carries `rose_gold`, a blaze rod handle carries
+`blaze_rod` — 10 full/handle materials. Raw materials join the same vocabulary
+through the smithing table: `quartz`, `redstone`, `lapis`, `emerald`,
+`prismarine`, `amethyst`, `slime`, `flint`, `bone` — plus the lining traits
+`wool`, `magma_cream`, `phantom_membrane`.
 
-### Guide book: "Materials & You"
+- **Inherent traits** follow from a tool's parts (head + handle) or an armor
+  piece's parts (lining + plating) and are never written down.
+- **Applied traits** are granted at the smithing table and stored on the tool.
+- Re-applying a trait the tool already carries (inherent OR applied) is refused
+  — no materials are ever wasted on a no-op.
+- The tool tooltip lists them: inherent in gray, applied in aqua.
+- **All trait effects are implemented** (see "Trait effects" below).
+- `string` and `leather` are retired as smithing modifiers (the leather trait
+  lives on via the leather lining).
+- Trait-enchant mutual exclusion rules are still a future milestone.
 
-Crafted from a book + iron ingot (also in the creative tab). Right-clicking builds the book **dynamically from the live registries** — every material page (stats + traits), every plate/lining page, the modifier list with costs, assembly instructions, repair rules and tips — so the documentation can never go stale (~50 pages). It opens in the vanilla written-book UI; no custom screens.
+## Smithing table modifiers
 
-### Repairing
+The **vanilla smithing table** (no custom menu): 1 modular tool in the base
+slot + materials in the addition slot. Taking the result applies the material's
+trait to the tool and re-bakes the tool's stats. 16 trait modifiers — modifier
+recipes refuse to show until the full material amount is present:
 
-Damaged modular gear + **one** repair material in a crafting grid restores 10% of max durability, repeatable forever. Repair items are derived per instance (baked `REPAIRABLE` component): heads repair with their material's crafting item, armor with the plate's vanilla armor-repair tag, wood-handle tools also accept sticks (Rooted). Vanilla anvil repair and Mending work too.
+| Modifier | Material | Cost |
+|---|---|---|
+| quartz / redstone / lapis / emerald / prismarine / amethyst / slime / flint / bone | the raw material | 3 |
+| wood | any planks | 3 |
+| stone | any stone variant | 3 |
+| iron / gold / diamond | the ingot/gem | 3 |
+| rose gold | the mod's ingot | 3 |
+| **netherite** | netherite ingot | **1**, plus the **vanilla `netherite_upgrade_smithing_template`** in the template slot, consumed like vanilla |
 
-## Architecture
+A custom mixin makes the vanilla menu consume exactly the amount in the table;
+vanilla smithing recipes are untouched and always consume 1. Modifier recipes
+without a template require the template slot to be EMPTY, so vanilla template
+recipes stay unambiguous.
 
-Everything rides on **vanilla data components** — the whole system is data-driven:
+### Modifier caps & unlocks
+
+A tool takes at most **3 applied modifiers**. Three strictly sequential unlock
+recipes (each consumed once) raise the cap:
+
+| Unlock | Material | Cap |
+|---|---|---|
+| 1 | nether star | 4 |
+| 2 | elytra | 5 |
+| 3 | dragon egg | 6 |
+
+**The dragon-egg legendary:** a tool carrying the egg is indestructible as an
+item entity (fire, lava, cactus, explosions), survives `/kill`, and falling out
+of the world returns it to the world spawn instead of discarding it. Near Nether
+heat it keeps its FULL durability damage (the netherite reduction is waived for
+it). The extraction recipe — the egg tool ALONE in a crafting grid — returns the
+egg and deletes the tool's LAST applied modifier (cap back down one step), so
+the egg is one-per-world and can never be duplicated.
+
+## Trait effects (fully implemented)
+
+Every trait now does something. Tick-driven traits re-derive what each player
+carries every tick from their worn armor, held tools and inventory — nothing
+is stored on the player.
+
+**Material traits**
+
+| Trait | Effect |
+|---|---|
+| wood (Regenerative) | Feet in water + outside in daylight + no rain + sky visible: every damaged wood-trait stack in the whole inventory repairs 1 durability per 3 s |
+| stone (Shadowed) | Below Y 63 with no sky above: +10 flat mining speed on held tools / +2 armor points on worn armor |
+| copper (Powered) | An active redstone source within 10 blocks (±4 vertically, re-checked every 2 s): copper/rose-gold items take no durability damage for 10 s (refreshes while near) |
+| iron (Last Stand) | At 4 HP or less: Strength I while holding an iron-trait tool, Resistance I while wearing iron-trait armor (maintained while low) |
+| gold (Piglin's Favor) | In the Nether: Absorption I maintained — 5 min 10 s window, re-applied every 5 min; hearts LOST to damage only come back at the next refresh. ANY gold-trait item in the inventory pacifies piglins |
+| rose gold (Defiant) | In the Nether: the gold effects, but piglins are always hostile; in the Overworld: the copper Powered effect |
+| diamond (Fortunate) | 50% durability saves: mining lower-tier blocks, hitting non-boss mobs at 20 HP or less, and armor hits under 2 damage |
+| netherite (Netherforged) | The ITEMS are fire/lava-proof (vanilla `DamageResistant`, dropped netherite stacks too) — the player is NOT fire-immune. In the Nether, with a lava or fire block within 8 blocks (±4 vertically, re-checked every 2 s): the held netherite weapon deals +20% attack damage, the held netherite tool mines +20% faster, and every netherite item takes 50% less durability damage (dragon-egg tools exempt) |
+| blaze rod (Blazing, handle) | Mobs hit are set on fire (3 s); broken blocks auto-smelt when a smelting recipe exists |
+| breeze rod (Windborne, handle) | Right-click launches the player upward with a gust at their feet (1.1 launch power, 2 s cooldown, mace combo) — right-click on a SPEAR keeps the vanilla charge-stab |
+
+**Lining traits**
+
+| Lining | Effect |
+|---|---|
+| leather (Frostward) | Immune to freezing damage (vanilla leather semantics — the buildup never progresses) |
+| wool (Silent) | Every game event the player causes is dropped — sculk sensors and wardens cannot detect them |
+| slime (Bouncy) | No fall damage and no elytra wall-impact damage; the player bounces upward instead — bounce = impact speed × 0.7, clamped to 0.6–2.0 (tuned, FLAGGED FOR USER); a hit that deals no damage gives no bounce |
+| phantom membrane (Phantom) | Full phantom-lining set: void fall teleports to the spawn point instead of killing — the save consumes exactly ONE lining (a full set is four saves), platings always stay. Any phantom lining in the End: Levitation immunity; crouching grants Slow Falling (4 s) |
+| magma cream (Heatproof) | Fire/lava damage reduced by 50% |
+
+**Smithing modifier traits** — quartz Power (+1 attack damage), flint Swift
+(+0.25 attack speed), redstone Haste (+15% mining speed), emerald Reinforced
+(+20% max durability) are **baked into the tool components** at apply time (and
+survive re-bakes); lapis Luck acts as **Fortune I for mining and Looting I for
+kills** by riding the vanilla enchantment lookups (no enchantment is written
+onto the item); prismarine Aquatic removes the underwater mining penalty;
+amethyst Resonance gains +0.1 attack speed per chained hit inside a 3 s window
+(cap +0.6 at 6 chained hits); slime Vacuum pulls broken blocks straight into the
+inventory (leftovers drop normally); bone Piercing ignores 20% of the target's
+armor reduction and 20% of the target's Protection reduction — two separate
+defense layers, each pierced by its own fraction, computed as exact vanilla-math
+pre-amplification and capped at 4× the input.
+
+All tunable numbers live in `TraitTuning` — values marked `FLAGGED FOR USER`
+are balance defaults awaiting playtesting.
+
+## Armor linings (first armor milestone)
+
+Five linings — **leather, wool, slime, magma cream, phantom membrane** —
+crafted from 2× their source material (shapeless). A lining:
+
+- is **wearable on its own**: right-click equips it into the first *empty*
+  armor slot (head → chest → legs → feet; occupied slots are never swapped
+  out), and every armor slot of the vanilla inventory accepts it;
+- has **no armor value**: no protection, no attributes, no durability — its
+  only identity is its **trait, which is its own name** (`leather`, `wool`,
+  `slime`, `magma_cream`, `phantom_membrane`), shown in the tooltip;
+- shows a recolored cloth layer on the body while worn (equipment assets);
+- is the padding layer the **armor plating** assembles with.
+
+Implementation note: 26.3's `Equippable` component holds exactly one slot per
+item, so a small mixin (`LivingEntityMixin`) opens all four humanoid armor
+slots for lining items — vanilla gating stays untouched for everything else.
+
+## Armor plating (second armor milestone)
+
+Twenty-eight platings — the 4 armor slots × the 7 full materials
+**wood, stone, copper, iron, gold, rose gold, diamond** — shaped at the
+**Part Picker** like tool parts (no crafting recipes). Item ids follow the part
+order: `helmet_plating_iron`, `chestplate_plating_rose_gold`, ...
+
+A plating:
+
+- is **slot-specific**: each plating type belongs to exactly one armor slot
+  (`PlatingType.HELMET_PLATING.slot == HEAD`, etc.);
+- carries its **material trait** (the trait is the material's name), shown in
+  the gray tooltip line like the linings — but grants **no armor value**
+  on its own and is **not wearable** (that is the assembled piece's job).
+
+**No netherite plating, by design:** platings stop at diamond. Netherite
+armor is reachable ONLY through the smithing upgrade (netherite ingot +
+vanilla template), and that upgrade only applies to armor with **diamond
+plating** — vanilla parity. The modifier system does not touch armor yet.
+
+## Armor assembly (third armor milestone)
+
+The **Assembler** also builds armor: a **lining in the handle slot + a plating
+in the head slot** → the piece the plating is shaped for. Assembly consumes
+both parts.
+
+- **The plating decides everything protective** — armor value, toughness,
+  knockback resistance, durability (`slot unit × material multiplier`,
+  vanilla formula), enchantability, repair items, equip sound and the worn
+  layer — through a vanilla `ArmorMaterial` record per material, so the
+  baked components are byte-identical in shape to vanilla armor.
+- **The lining contributes its trait.** A piece's inherent traits = lining
+  trait + plating trait, shown in the tooltip (same style as tools).
+
+Ladder (durability multiplier, defense helmet/chestplate/leggings/boots,
+enchantability — armor enchantability reuses the material's tool value):
+
+| Material | Dur. × | Defense | Ench | Notes |
+|---|---|---|---|---|
+| wood | 5 | 1/3/2/1 | 15 | leather tier, leather equip sound |
+| stone | 8 | 1/4/3/1 | 5 | chain equip sound |
+| copper | 11 | 1/4/3/2 | 13 | vanilla copper |
+| iron | 15 | 2/6/5/2 | 14 | vanilla iron |
+| gold | 7 | 1/5/3/2 | 22 | vanilla gold |
+| rose gold | 13 | 2/5/4/2 | 18 | between copper and iron, iron equip sound |
+| diamond | 33 | 3/8/6/3 | 10 | vanilla diamond, toughness 2 |
+| netherite | 37 | 3/8/6/3 | 15 | **upgrade-only** — toughness 3, knockback resistance 0.1, fire resistant |
+
+- **Netherite upgrade (the diamond-plating gate):** a DIAMOND-plated piece +
+  1 netherite ingot + the vanilla smithing template becomes the same piece
+  with netherite plating (the netherite row above), keeping its lining and
+  enchantments. Iron-plated or worse refuses.
+- Worn look: per-material humanoid armor layers (vanilla textures where
+  they exist, recolored iron layers for wood/stone/rose gold); the
+  inventory icon layers the lining padding under the plating silhouette.
+
+## Kiln & Fletching Table
+
+- **Kiln** — the third furnace (8 bricks in the furnace pattern). It smelts
+  *everything a regular furnace smelts except what belongs to the smoker or
+  the blast furnace* — anything with a smelting recipe but no smoking/blasting
+  recipe (sand, cobble, clay, logs, cactus, ...), including modded smelting.
+  No recipe entries of its own; matching is dynamic. Cooks at twice the
+  furnace speed (100 t). Fuel, hoppers, XP and the lit state reuse the vanilla
+  furnace engine. Non-kilnable items are refused by the input slot, so hoppers
+  cannot jam on smoker food or ores.
+- **Fletching Table** — the vanilla block now opens a menu: 2 potion slots +
+  an arrow slot. Each potion coats up to 32 arrows, so 2 potions + 64 arrows
+  → 64 tipped arrows in one take (1 potion + 32 arrows works; mixed potions
+  are rejected; effectless bases — water, mundane, thick, awkward — don't
+  coat). Drinkable, splash and lingering potions all work.
+
+## Build
 
 ```
-MODULAR_DATA (custom component)          <- part materials + modifier levels
-    |
-    v  StatsEngine.bake()
-MAX_DAMAGE, TOOL (mining rules/speed), ATTRIBUTE_MODIFIERS, ENCHANTABLE,
-REPAIRABLE, WEAPON, EQUIPPABLE (armor: slot/sound/vanilla asset),
-KINETIC_WEAPON + PIERCING_WEAPON + ATTACK_RANGE + ... (spear),
-DAMAGE_RESISTANT (netherite), ITEM_NAME, ITEM_MODEL (per-material look)
+./gradlew build        # Gradle wrapper 9.7.1, JDK 25
 ```
 
-- **7 tool items + 4 armor items total** — individual gear differs only by its data components, exactly like vanilla 26.3 items.
-- **3 custom `CustomRecipe` serializers**: `assembly` (any material combination of parts), `modifier`, `repair` — all singleton code recipes, no JSON duplication.
-- **Part items** (202: material x part type) are plain ingredients; assembly accepts any valid combination of them in any grid arrangement.
-- Per-material item visuals via the per-instance `ITEM_MODEL` component + 2-layer generated models (neutral base + colored head/plate overlay), one definition per material combination.
-- Mace behavior is inherited by extending `MaceItem`; spear behavior is purely component-driven (`KINETIC_WEAPON`/`PIERCING_WEAPON`, replicating vanilla's exact construction parameters).
-- Trait hooks: Fiery ignition via `hurtEnemy`, Dense/Reinforced durability reduction via Fabric's `CustomDamageHandler`.
+The jar lands in `build/libs/`. Requires Fabric Loader ≥ 0.19.5 and **Fabric API**
+for 26.3 (`0.162.0+26.3`). Loom 1.18-SNAPSHOT, Java 25. Mod version:
+`2.0.0-mc26.3`.
 
-### Data generation
+Headless verification: `MODULAR_DREAMS_SELFTEST=true` (or
+`-Dmodular_dreams.selftest=true`) runs **129 end-to-end checks** at server start —
+smithing modifiers, netherite template requirement, the lining equip rules, the
+plating rules, armor assembly and the netherite armor upgrade included.
 
-All repetitive data is generated (`src/main/generated`, 1184 files):
+## Layout
 
-- **375 item models** (flat parts, 2-layer tools/armor per material) + **374 client item definitions**
-- **en_us.json** with every item name, guide page, trait, modifier and tooltip
-- **206 recipes**: 202 part recipes + assembly + modifier + repair + guide book (each with its unlock advancement)
-- **item tags**: modular tools/armor join the vanilla enchantable/equipment/trim tags so all vanilla enchantments and armor trims work
-- **3 advancements** (root, first tool, three modifiers)
-- **375 procedural pixel-art textures** (generated by `scripts/gen_textures.py` from per-material palettes + part silhouettes)
+- `src/main/java/com/modulardreams/` — materials, parts, components, stats engine,
+  stations, menus, networking, linings, platings, armor pieces
+- `src/client/java/` — screens, the `modular_dreams:modular_tool` layered item
+  model type (Tinkers'-style per-material layering)
+- `src/main/resources/assets/modular_dreams/` — textures (asset pack integrated +
+  generated missing pieces), item definitions, equipment assets, blockstates, lang
+- `src/main/resources/data/` — recipes, tags, loot tables
+- `scripts/` (project root sibling) — `gen_textures.py`, `gen_lining_assets.py`,
+  `gen_plating_assets.py`, `gen_armor_assets.py`, `gen_data.py` regenerate all
+  derived assets and JSON
 
-## Project layout
+## Next milestones (per the v2 plan)
 
-```
-src/main/java/com/modulardreams/
-    ModularDreams.java          entrypoint
-    component/                  custom MODULAR_DATA component (codec/network)
-    material/                   material definitions + mining tiers
-    part/                       PartType enum
-    equipment/                  items, tool/armor types, guide book
-    stats/                      StatsEngine + traits
-    modifier/                   modifier definitions
-    recipe/                     assembly / modifier / repair recipes
-    registry/                   helpers, creative tab, registry access
-src/client/java/com/modulardreams/
-    client/                     client entrypoint
-    datagen/                    7 datagen providers
-src/main/resources/             fabric.mod.json, classtweaker, icon, textures
-src/main/generated/             datagen output (committed)
-scripts/gen_textures.py         procedural texture generator (Python)
-```
-
-## Build results
-
-The project compiles and builds successfully with the pinned toolchain (Gradle 9.5.1, Loom 1.17-SNAPSHOT, JDK 25, `--no-daemon`). The compiled mod JAR was smoke-tested by launching a dedicated server with Fabric Loader + Fabric API: the mod initializes, all registries/recipes/datapack data load without errors, and the server reaches the "Done" state.
-
-## License
-
-CC0-1.0 (inherited from the Fabric example mod template).
+- Trait-enchant mutual exclusion rules
+- Magic resistance modifier, balance pass
+- Tuning pass on the flagged trait numbers in `TraitTuning`

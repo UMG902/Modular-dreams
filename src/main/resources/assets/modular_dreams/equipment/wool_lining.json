@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "modular_dreams:wool_lining"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "modular_dreams:wool_lining"
+      }
+    ]
+  }
+}

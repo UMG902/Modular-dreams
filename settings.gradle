@@ -10,4 +10,4 @@ pluginManagement {
 }
 
 // Should match your modid
-rootProject.name = 'modular-dreams'
+rootProject.name = 'modular-dreams-v2'

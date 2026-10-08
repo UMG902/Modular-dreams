@@ -2,113 +2,122 @@ package com.modulardreams.equipment;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import net.minecraft.core.registries.Registries;
 
 import com.modulardreams.ModularDreams;
 import com.modulardreams.material.ModMaterials;
 import com.modulardreams.material.ModularMaterial;
 import com.modulardreams.part.PartType;
-import com.modulardreams.stats.ModTraits;
+import com.modulardreams.registry.ModRegistry;
 
 /**
- * All {@link PartType} x material part items (e.g. "Iron Pickaxe Head").
- * Parts are plain crafting ingredients; all stats live in the assembled item.
+ * Every tool part of v2: the universal handle in 10 handle materials and
+ * one head per tool type in the 8 head materials. Items are registered as
+ * {@code <part>_<material>} (e.g. {@code pickaxe_head_copper},
+ * {@code handle_wood}) matching the art pipeline (textures, item models
+ * and client item definitions all use this order).
  */
 public class ModPartItems {
 
-	/** A part item instance carrying its identity. */
-	public static class PartItem extends Item {
-		private final PartType partType;
-		private final ModularMaterial material;
+    /** (part id, material id) -> item. */
+    // insertion-ordered (registry order); written only during mod init
+    private static final Map<String, Item> PARTS = new LinkedHashMap<>();
 
-		public PartItem(PartType partType, ModularMaterial material, Properties properties) {
-			super(properties);
-			this.partType = partType;
-			this.material = material;
-		}
+    /** item -> identity, for O(1) resolve() (called for every inventory stack). */
+    private static final Map<Item, PartIdentity> BY_ITEM = new ConcurrentHashMap<>();
 
-		public PartType partType() {
-			return partType;
-		}
+    /** A resolved part identity: which part type in which material. */
+    public record PartIdentity(PartType part, ModularMaterial material) {}
 
-		public ModularMaterial material() {
-			return material;
-		}
+    public static void registerAll() {
+        for (ModularMaterial material : ModMaterials.handleMaterials()) {
+            registerPart(PartType.HANDLE, material);
+        }
+        for (ModularMaterial material : ModMaterials.headMaterials()) {
+            for (PartType part : PartType.values()) {
+                if (part.isHead()) {
+                    registerPart(part, material);
+                }
+            }
+        }
+        // Startup invariant: every part+material pair the creative tab and the
+        // Part Picker can ask for MUST resolve. Failing here (at mod init, on
+        // both sides) beats crashing the client's render thread later with
+        // "No part item for ..." when the creative inventory first opens.
+        for (PartType part : PartType.values()) {
+            List<ModularMaterial> materials = part.isHandle()
+                    ? ModMaterials.handleMaterials()
+                    : ModMaterials.headMaterials();
+            for (ModularMaterial material : materials) {
+                if (!PARTS.containsKey(key(part.id, material.id()))) {
+                    throw new IllegalStateException(
+                            "Part item failed to register: " + part.id + "_" + material.id());
+                }
+            }
+        }
+        ModularDreams.LOGGER.info("Registered {} tool part items ({} handle materials, {} head materials)",
+                PARTS.size(), ModMaterials.handleMaterials().size(), ModMaterials.headMaterials().size());
+    }
 
-		@Override
-		public void appendHoverText(ItemStack stack, TooltipContext context,
-				net.minecraft.world.item.component.TooltipDisplay display,
-				java.util.function.Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
-			tooltip.accept(Component.translatable("part.modular_dreams.material_line",
-					Component.translatable(material.nameKey())).withStyle(ChatFormatting.GRAY));
-			for (ModTraits trait : material.traits()) {
-				if (trait.category.matches(true)) {
-					tooltip.accept(Component.translatable(trait.nameKey()).withStyle(ChatFormatting.BLUE)
-							.append(Component.literal(" — ").withStyle(ChatFormatting.DARK_GRAY))
-							.append(Component.translatable(trait.descriptionKey())
-									.withStyle(ChatFormatting.DARK_GRAY)));
-				}
-			}
-		}
-	}
+    private static void registerPart(PartType part, ModularMaterial material) {
+        String name = part.id + "_" + material.id();
+        Item item = ModRegistry.registerItem(name, properties -> new Item(properties));
+        PARTS.put(key(part.id, material.id()), item);
+        BY_ITEM.put(item, new PartIdentity(part, material));
+    }
 
-	private static final Map<String, Item> BY_NAME = new LinkedHashMap<>();
-	private static final Map<PartType, List<Item>> BY_PART = new LinkedHashMap<>();
+    private static String key(String partId, String materialId) {
+        return partId + "|" + materialId;
+    }
 
-	public static final Map<String, Item> registry() {
-		return BY_NAME;
-	}
+    /**
+     * @return the part item for a part+material pair, or null if it was not
+     *         registered. Use this on the client (creative tab, tooltips)
+     *         where a hard throw would crash the render thread.
+     */
+    public static Item find(PartType part, ModularMaterial material) {
+        return PARTS.get(key(part.id, material.id()));
+    }
 
-	public static Item get(PartType part, ModularMaterial material) {
-		Item item = BY_NAME.get(material.id() + "_" + part.id);
-		if (item == null) {
-			throw new IllegalStateException("No part item for " + material.id() + "_" + part.id);
-		}
-		return item;
-	}
+    public static Item get(PartType part, ModularMaterial material) {
+        return getOrThrow(part.id, material.id());
+    }
 
-	public static List<Item> itemsOf(PartType part) {
-		return BY_PART.getOrDefault(part, List.of());
-	}
+    public static Item getOrThrow(String partId, String materialId) {
+        Item item = PARTS.get(key(partId, materialId));
+        if (item == null) {
+            throw new IllegalStateException("No part item for " + materialId + " " + partId);
+        }
+        return item;
+    }
 
-	/** @return the part identity of this stack, if it is a modular part. */
-	public static Optional<PartIdentity> resolve(ItemStack stack) {
-		if (stack.getItem() instanceof PartItem partItem) {
-			return Optional.of(new PartIdentity(partItem.partType(), partItem.material()));
-		}
-		return Optional.empty();
-	}
+    /** @return the part identity of a stack, or empty for foreign items. */
+    public static Optional<PartIdentity> resolve(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(BY_ITEM.get(stack.getItem()));
+    }
 
-	public record PartIdentity(PartType part, ModularMaterial material) {}
+    /** @return the part item name for a part+material pair, e.g. "pickaxe_head_copper". */
+    public static String itemName(PartType part, String materialId) {
+        return part.id + "_" + materialId;
+    }
 
-	public static void registerAll() {
-		for (PartType part : PartType.values()) {
-			BY_PART.put(part, new ArrayList<>());
-			for (ModularMaterial material : part.allowedMaterials()) {
-				register(part, material);
-			}
-		}
-	}
+    /** @return the registered item id of a part item, for datagen-style lookups. */
+    public static net.minecraft.resources.Identifier idOf(PartType part, String materialId) {
+        return ModularDreams.id(itemName(part, materialId));
+    }
 
-	private static void register(PartType part, ModularMaterial material) {
-		String name = material.id() + "_" + part.id;
-		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, ModularDreams.id(name));
-		PartItem item = new PartItem(part, material, new Item.Properties().setId(key));
-		Registry.register(BuiltInRegistries.ITEM, key, item);
-		BY_NAME.put(name, item);
-		BY_PART.get(part).add(item);
-	}
+    /** @return every part item (registry order). */
+    public static List<Item> allItems() {
+        return List.copyOf(PARTS.values());
+    }
 }

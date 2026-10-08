@@ -1,0 +1,8 @@
+{
+ "parent": "minecraft:block/cube_bottom_top",
+ "textures": {
+  "top": "modular_dreams:block/part_picker_diamond_top",
+  "side": "modular_dreams:block/part_picker_diamond_side",
+  "bottom": "modular_dreams:block/part_picker_diamond_bottom"
+ }
+}

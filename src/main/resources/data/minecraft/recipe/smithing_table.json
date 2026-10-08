@@ -1,0 +1,17 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "key": {
+  "I": "minecraft:iron_ingot",
+  "C": "#modular_dreams:stone_materials"
+ },
+ "pattern": [
+  "II",
+  "CC",
+  "CC"
+ ],
+ "result": {
+  "id": "minecraft:smithing_table",
+  "count": 1
+ }
+}

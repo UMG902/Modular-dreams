@@ -1,8 +1,0 @@
-{
-  "type": "modular_dreams:part_builder",
-  "cost": 2,
-  "ingredient": "minecraft:leather",
-  "result": {
-    "id": "modular_dreams:leather_spear_binding"
-  }
-}

@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "modular_dreams:stone"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "modular_dreams:stone"
+      }
+    ]
+  }
+}

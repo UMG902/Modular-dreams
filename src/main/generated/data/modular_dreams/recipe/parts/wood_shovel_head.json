@@ -1,7 +1,0 @@
-{
-  "type": "modular_dreams:part_builder",
-  "ingredient": "#minecraft:planks",
-  "result": {
-    "id": "modular_dreams:wood_shovel_head"
-  }
-}

@@ -1,0 +1,16 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "key": {
+  "X": "#modular_dreams:stone_materials"
+ },
+ "pattern": [
+  "XXX",
+  "X X",
+  "XXX"
+ ],
+ "result": {
+  "id": "minecraft:furnace",
+  "count": 1
+ }
+}

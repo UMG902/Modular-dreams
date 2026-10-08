@@ -2,28 +2,28 @@
         "schemaVersion": 1,
         "id": "modular_dreams",
         "version": "${version}",
-        "name": "Modular Dreams",
-        "description": "A Tinkers'-inspired modular equipment system for vanilla tools, weapons and armor. Assemble, upgrade, repair and modify gear from vanilla materials.",
+        "name": "Modular Dreams v2",
+        "description": "Fresh-start modular equipment overhaul: craft tool parts at the Part Picker, assemble them at the Assembler, and convert your vanilla tools. Handle + head, rose gold and spears included.",
         "authors": [
                 "Modular Dreams Team"
         ],
         "contact": {
-                "homepage": "https://fabricmc.net/",
-                "sources": "https://github.com/FabricMC/fabric-example-mod"
+                "homepage": "https://github.com/UMG902/Modular-dreams",
+                "sources": "https://github.com/UMG902/Modular-dreams"
         },
         "license": "CC0-1.0",
         "icon": "assets/modular_dreams/icon.png",
         "environment": "*",
-        "accessWidener": "modular_dreams.classtweaker",
+        "mixins": [
+                "modular_dreams.mixins.json"
+        ],
+        "classtweaker": "modular_dreams.classtweaker",
         "entrypoints": {
                 "main": [
                         "com.modulardreams.ModularDreams"
                 ],
                 "client": [
                         "com.modulardreams.client.ModularDreamsClient"
-                ],
-                "fabric-datagen": [
-                        "com.modulardreams.datagen.ModDataGenerator"
                 ]
         },
         "depends": {

@@ -1,116 +1,113 @@
 package com.modulardreams.component;
 
+import java.util.List;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
 
-import net.minecraft.core.registries.Registries;
-
 import com.modulardreams.ModularDreams;
 
-import java.util.List;
-
 /**
- * Custom data components of Modular Dreams.
+ * Custom data components of Modular Dreams v2.
  *
- * {@link #MODULAR_DATA} is the heart of the system: it records which vanilla
- * materials every part of a piece of equipment is made of, plus the levels of
- * every applied modifier. All gameplay stats are derived from it and baked into
- * vanilla components by the {@code StatsEngine}.
+ * {@link #MODULAR_DATA} records which material every part of an assembled
+ * item is made of (handle + head), plus modifier levels reserved for the
+ * traits &amp; modifiers milestone. All gameplay stats are derived from it and
+ * baked into vanilla components by the {@code StatsEngine}.
  */
 public class ModDataComponents {
 
-        /** One part of an assembled item: a part type id + a material id. */
-        public record PartData(String part, String material) {
-                public static final Codec<PartData> CODEC = RecordCodecBuilder.create(i -> i.group(
-                                Codec.STRING.fieldOf("part").forGetter(PartData::part),
-                                Codec.STRING.fieldOf("material").forGetter(PartData::material)
-                ).apply(i, PartData::new));
+    /** One part of an assembled item: a part type id + a material id. */
+    public record PartData(String part, String material) {
+        public static final Codec<PartData> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.STRING.fieldOf("part").forGetter(PartData::part),
+                Codec.STRING.fieldOf("material").forGetter(PartData::material)
+        ).apply(i, PartData::new));
+    }
+
+    /** One applied modifier. Traits have NO levels: a modifier is either on a tool or not. */
+    public record ModifierEntry(String id) {
+        public static final Codec<ModifierEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.STRING.fieldOf("id").forGetter(ModifierEntry::id)
+        ).apply(i, ModifierEntry::new));
+    }
+
+    /**
+     * The full modular definition of an assembled item.
+     *
+     * <p>{@code unlocks} counts the modifier-slot expansions bought at the
+     * smithing table with a nether star (1), an elytra (2) and the dragon
+     * egg (3). A tool with unlocks == 3 carries the dragon egg - it is the
+     * indestructible 6-slot legendary and its egg can be extracted back.
+     */
+    public record ModularData(String equipmentType, List<PartData> parts, List<ModifierEntry> modifiers,
+            int unlocks) {
+
+        public static final int BASE_MODIFIER_CAP = 3;
+        public static final int MAX_UNLOCKS = 3;
+
+        public static final Codec<ModularData> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.STRING.fieldOf("equipment_type").forGetter(ModularData::equipmentType),
+                PartData.CODEC.listOf().fieldOf("parts").forGetter(ModularData::parts),
+                ModifierEntry.CODEC.listOf().optionalFieldOf("modifiers", List.of()).forGetter(ModularData::modifiers),
+                Codec.INT.optionalFieldOf("unlocks", 0).forGetter(ModularData::unlocks)
+        ).apply(i, ModularData::new));
+
+        public static final ModularData EMPTY = new ModularData("none", List.of(), List.of(), 0);
+
+        public java.util.Optional<String> materialOf(String partType) {
+            return parts.stream().filter(p -> p.part().equals(partType))
+                    .map(PartData::material).findFirst();
         }
 
-        /** One applied modifier: its id and current level (1-based). */
-        public record ModifierEntry(String id, int level) {
-                public static final Codec<ModifierEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
-                                Codec.STRING.fieldOf("id").forGetter(ModifierEntry::id),
-                                Codec.INT.fieldOf("level").forGetter(ModifierEntry::level)
-                ).apply(i, ModifierEntry::new));
+        public java.util.Optional<PartData> partOf(String partType) {
+            return parts.stream().filter(p -> p.part().equals(partType)).findFirst();
         }
 
-        /** The full modular definition of an assembled item. */
-        public record ModularData(String equipmentType, List<PartData> parts, List<ModifierEntry> modifiers) {
-
-                public static final Codec<ModularData> CODEC = RecordCodecBuilder.create(i -> i.group(
-                                Codec.STRING.fieldOf("equipment_type").forGetter(ModularData::equipmentType),
-                                PartData.CODEC.listOf().fieldOf("parts").forGetter(ModularData::parts),
-                                ModifierEntry.CODEC.listOf().optionalFieldOf("modifiers", List.of()).forGetter(ModularData::modifiers)
-                ).apply(i, ModularData::new));
-
-                public static final ModularData EMPTY = new ModularData("none", List.of(), List.of());
-
-                public java.util.Optional<String> materialOf(String partType) {
-                        return parts.stream().filter(p -> p.part().equals(partType))
-                                        .map(PartData::material).findFirst();
-                }
-
-                public int levelOf(String modifierId) {
-                        return modifiers.stream().filter(m -> m.id().equals(modifierId))
-                                        .mapToInt(ModifierEntry::level).findFirst().orElse(0);
-                }
-
-                public ModularData withModifier(String modifierId, int newLevel) {
-                        List<ModifierEntry> updated = modifiers.stream()
-                                        .filter(m -> !m.id().equals(modifierId))
-                                        .collect(java.util.stream.Collectors.toList());
-                        if (newLevel > 0) {
-                                updated.add(new ModifierEntry(modifierId, newLevel));
-                        }
-                        return new ModularData(equipmentType, parts, List.copyOf(updated));
-                }
+        /** Whether the tool carries this applied modifier (traits have no levels). */
+        public boolean hasModifier(String modifierId) {
+            return modifiers.stream().anyMatch(m -> m.id().equals(modifierId));
         }
 
-        public static final ResourceKey<DataComponentType<?>> MODULAR_DATA_KEY = ResourceKey
-                        .create(Registries.DATA_COMPONENT_TYPE, ModularDreams.id("modular_data"));
-
-        public static final DataComponentType<ModularData> MODULAR_DATA = DataComponentType.<ModularData>builder()
-                        .persistent(ModularData.CODEC)
-                        .networkSynchronized(ByteBufCodecs.fromCodec(ModularData.CODEC))
-                        .build();
-
-        public static final ResourceKey<DataComponentType<?>> STATS_VERSION_KEY = ResourceKey
-                        .create(Registries.DATA_COMPONENT_TYPE, ModularDreams.id("stats_version"));
-
-        /**
-         * Version stamp of the stat formula that baked this stack. Items whose stamp
-         * differs from {@link com.modulardreams.stats.StatsEngine#STATS_VERSION} are
-         * silently re-baked from their modular data the first time they tick in an
-         * inventory, so tools built by older builds (or older formulas) self-heal.
-         */
-        public static final DataComponentType<Integer> STATS_VERSION = DataComponentType.<Integer>builder()
-                        .persistent(Codec.INT)
-                        .networkSynchronized(ByteBufCodecs.VAR_INT)
-                        .build();
-
-        /**
-         * The part shape a mold is shaped into (a {@link PartType} id, e.g.
-         * {@code pickaxe_head}). Present on shaped clay and terracotta molds;
-         * absent on fresh molds. Applies to the mold ITEM form and to the clay
-         * mold block entity's stored stack.
-         */
-        public static final DataComponentType<String> MOLD_PART = DataComponentType.<String>builder()
-                        .persistent(Codec.STRING)
-                        .networkSynchronized(ByteBufCodecs.STRING_UTF8)
-                        .build();
-
-        public static void initialize() {
-                Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, MODULAR_DATA_KEY, MODULAR_DATA);
-                Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, STATS_VERSION_KEY, STATS_VERSION);
-                Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
-                                ResourceKey.create(Registries.DATA_COMPONENT_TYPE, ModularDreams.id("mold_part")),
-                                MOLD_PART);
+        /** The modifier cap for this tool: 3 base + one per unlock tier. */
+        public int modifierCap() {
+            return BASE_MODIFIER_CAP + Math.max(0, Math.min(MAX_UNLOCKS, unlocks));
         }
+
+        /** Whether this item carries the dragon egg (the third unlock). */
+        public boolean hasDragonEgg() {
+            return unlocks >= MAX_UNLOCKS;
+        }
+    }
+
+    public static final DataComponentType<ModularData> MODULAR_DATA = DataComponentType.<ModularData>builder()
+            .persistent(ModularData.CODEC)
+            .networkSynchronized(ByteBufCodecs.fromCodec(ModularData.CODEC))
+            .build();
+
+    /**
+     * Version stamp of the stat formula that baked this stack. Stacks whose
+     * stamp differs are re-baked from their modular data the first time they
+     * tick in an inventory, so older tools self-heal.
+     */
+    public static final DataComponentType<Integer> STATS_VERSION = DataComponentType.<Integer>builder()
+            .persistent(Codec.INT)
+            .networkSynchronized(ByteBufCodecs.VAR_INT)
+            .build();
+
+    public static void initialize() {
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+                ResourceKey.create(Registries.DATA_COMPONENT_TYPE, ModularDreams.id("modular_data")),
+                MODULAR_DATA);
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+                ResourceKey.create(Registries.DATA_COMPONENT_TYPE, ModularDreams.id("stats_version")),
+                STATS_VERSION);
+    }
 }

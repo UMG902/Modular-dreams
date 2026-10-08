@@ -1,0 +1,82 @@
+{
+  "model": {
+    "type": "modular_dreams:modular_tool",
+    "layers": [
+      {
+        "part": "lining",
+        "variants": {
+          "leather": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_lining_leather"
+          },
+          "wool": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_lining_wool"
+          },
+          "slime": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_lining_slime"
+          },
+          "magma_cream": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_lining_magma_cream"
+          },
+          "phantom_membrane": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_lining_phantom_membrane"
+          }
+        }
+      },
+      {
+        "part": "leggings_plating",
+        "variants": {
+          "wood": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_plating_wood"
+          },
+          "stone": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_plating_stone"
+          },
+          "copper": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_plating_copper"
+          },
+          "iron": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_plating_iron"
+          },
+          "gold": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_plating_gold"
+          },
+          "rose_gold": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_plating_rose_gold"
+          },
+          "diamond": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_plating_diamond"
+          },
+          "netherite": {
+            "type": "minecraft:model",
+            "model": "modular_dreams:item/modular/leggings_plating_netherite"
+          }
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:composite",
+      "models": [
+        {
+          "type": "minecraft:model",
+          "model": "modular_dreams:item/modular/leggings_lining_leather"
+        },
+        {
+          "type": "minecraft:model",
+          "model": "modular_dreams:item/modular/leggings_plating_iron"
+        }
+      ]
+    }
+  }
+}

@@ -1,8 +1,0 @@
-{
-  "type": "modular_dreams:part_builder",
-  "cost": 2,
-  "ingredient": "#minecraft:planks",
-  "result": {
-    "id": "modular_dreams:wood_sword_binding"
-  }
-}

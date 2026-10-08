@@ -1,7 +1,0 @@
-{
-  "type": "modular_dreams:mold_baking",
-  "ingredient": "modular_dreams:clay_mold",
-  "result": {
-    "id": "modular_dreams:terracotta_mold"
-  }
-}
