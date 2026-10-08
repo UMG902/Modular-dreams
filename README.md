@@ -1,8 +1,7 @@
 # Modular Dreams v2 — fresh start
 
 A clean-slate rebuild of the Modular Dreams overhaul for **Minecraft 26.3 (Fabric)**.
-The v1 repo (https://github.com/UMG902/Modular-dreams) is used as an **API reference
-only** — no features, no ideas, ever.
+The v2 current repo (https://github.com/UMG902/Modular-dreams) is the current version, v1 is lost to time.
 
 Requires **Fabric Loader ≥ 0.19.5** and **Fabric API** for 26.3, on **Java 25**.
 
